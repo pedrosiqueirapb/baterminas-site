@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { followsSentenceCase } from "@/lib/text";
-import { formatWhatsapp, mapsUrl, normalizeWhatsapp, telUrl, whatsappUrl } from "@/lib/whatsapp";
-import { brandSchema, settingsSchema, sniffImageType, testimonialSchema } from "@/lib/validation";
+import { formatWhatsapp, mapsUrl, normalizeWhatsapp, whatsappUrl } from "@/lib/whatsapp";
+import { brandSchema, settingsSchema, sniffImageType } from "@/lib/validation";
 import { jsonLd } from "@/lib/seo";
 import { FALLBACK_SETTINGS } from "@/lib/constants";
 import { parseHours } from "@/lib/hours";
@@ -34,8 +34,7 @@ describe("whatsapp e links", () => {
     expect(normalizeWhatsapp("(34) 99995-4450")).toBe("5534999954450");
     expect(formatWhatsapp("5534999954450")).toBe("+55 34 99995-4450");
   });
-  it("gera tel e maps", () => {
-    expect(telUrl("(34) 3229-5639")).toBe("tel:+553432295639");
+  it("gera link do maps", () => {
     expect(mapsUrl("Av. X, 1")).toContain("destination=Av.%20X%2C%201");
   });
 });
@@ -47,12 +46,6 @@ describe("validação", () => {
   });
   it("aceita marca válida", () => {
     expect(brandSchema.safeParse({ name: "Moura", description: "Consulte as opções pelo WhatsApp.", image_alt: "", sort_order: "2", active: true }).success).toBe(true);
-  });
-  it("não publica depoimento sem autorização e não aceita origem google", () => {
-    const base = { display_name: "Ana", body: "Ótimo atendimento", testimonial_date: "", source: "cliente_loja", authorized: false, published: true };
-    expect(testimonialSchema.safeParse(base).success).toBe(false);
-    expect(testimonialSchema.safeParse({ ...base, authorized: true, source: "google" }).success).toBe(false);
-    expect(testimonialSchema.safeParse({ ...base, authorized: true }).success).toBe(true);
   });
   it("valida configurações e rejeita URLs inseguras", () => {
     const ok = {

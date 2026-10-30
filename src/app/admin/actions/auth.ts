@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { ADMIN_LOGIN_ID } from "@/lib/constants";
 import { rateLimit } from "@/lib/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 
@@ -23,12 +24,8 @@ export async function signIn(_: AuthState, formData: FormData): Promise<AuthStat
   const parsed = loginSchema.safeParse({ password: formData.get("password") });
   if (!parsed.success) return { error: "Informe a senha." };
 
-  // A conta administrativa é definida no servidor (ADMIN_EMAIL); o e-mail nunca é digitado nem exposto ao navegador.
-  const email = process.env.ADMIN_EMAIL?.trim();
-  if (!email) return { error: "O acesso ao painel ainda não foi configurado." };
-
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password: parsed.data.password });
+  const { error } = await supabase.auth.signInWithPassword({ email: ADMIN_LOGIN_ID, password: parsed.data.password });
   if (error) return { error: "Senha incorreta." };
   redirect("/admin/mfa");
 }

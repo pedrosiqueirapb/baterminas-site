@@ -5,7 +5,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { logAdminAction, requireAdmin } from "@/lib/auth";
 import { parseHours } from "@/lib/hours";
 import {
-  IMAGE_RULES, brandSchema, categorySchema, settingsSchema, sniffImageType, testimonialSchema, uuidSchema,
+  IMAGE_RULES, brandSchema, categorySchema, settingsSchema, sniffImageType, uuidSchema,
 } from "@/lib/validation";
 import { CONTENT_TAG } from "@/services/content";
 import type { ActionResult } from "@/types/content";
@@ -203,39 +203,4 @@ export async function saveCategory(_: ActionResult | undefined, fd: FormData): P
   await logAdminAction(admin.supabase, admin.user.id, "update", "battery_categories", id);
   publish();
   return { ok: true, message: "Categoria atualizada." };
-}
-
-/* ---------- Depoimentos ---------- */
-export async function saveTestimonial(_: ActionResult | undefined, fd: FormData): Promise<ActionResult> {
-  const admin = await requireAdmin();
-  const idRaw = str(fd, "id");
-  const parsed = testimonialSchema.safeParse({
-    display_name: str(fd, "display_name"), body: str(fd, "body"), testimonial_date: str(fd, "testimonial_date"),
-    source: str(fd, "source") || "cliente_loja", authorized: bool(fd, "authorized"), published: bool(fd, "published"),
-  });
-  if (!parsed.success) return fail(parsed.error);
-  const row = { ...parsed.data, testimonial_date: parsed.data.testimonial_date || null };
-  if (idRaw) {
-    if (!uuidSchema.safeParse(idRaw).success) return { ok: false, message: "Identificador inválido." };
-    const { error } = await admin.supabase.from("testimonials").update(row).eq("id", idRaw);
-    if (error) return dbError();
-    await logAdminAction(admin.supabase, admin.user.id, "update", "testimonials", idRaw);
-  } else {
-    const { data, error } = await admin.supabase.from("testimonials").insert(row).select("id").single();
-    if (error) return dbError();
-    await logAdminAction(admin.supabase, admin.user.id, "create", "testimonials", data.id);
-  }
-  publish();
-  return { ok: true, message: idRaw ? "Depoimento atualizado." : "Depoimento criado." };
-}
-
-export async function deleteTestimonial(_: ActionResult | undefined, fd: FormData): Promise<ActionResult> {
-  const admin = await requireAdmin();
-  const id = str(fd, "id");
-  if (!uuidSchema.safeParse(id).success) return { ok: false, message: "Identificador inválido." };
-  const { error } = await admin.supabase.from("testimonials").delete().eq("id", id);
-  if (error) return dbError();
-  await logAdminAction(admin.supabase, admin.user.id, "delete", "testimonials", id);
-  publish();
-  return { ok: true, message: "Depoimento excluído." };
 }

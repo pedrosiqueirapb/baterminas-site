@@ -2,7 +2,7 @@ import "server-only";
 import { createClient } from "@supabase/supabase-js";
 import { unstable_cache } from "next/cache";
 import { FALLBACK_BRANDS, FALLBACK_CATEGORIES, FALLBACK_SETTINGS } from "@/lib/constants";
-import type { Brand, Category, SiteSettings, Testimonial } from "@/types/content";
+import type { Brand, Category, SiteSettings } from "@/types/content";
 
 export const CONTENT_TAG = "site-content";
 
@@ -24,7 +24,6 @@ export type PublicContent = {
   settings: SiteSettings;
   brands: Brand[];
   categories: Category[];
-  testimonials: Testimonial[];
   fromDatabase: boolean;
 };
 
@@ -35,18 +34,16 @@ async function loadContent(): Promise<PublicContent> {
   const supabase = anonClient();
   if (!supabase) return fallback();
   try {
-    const [s, b, c, t] = await Promise.all([
+    const [s, b, c] = await Promise.all([
       supabase.from("site_settings").select(SETTINGS_COLS).eq("id", 1).maybeSingle(),
       supabase.from("battery_brands").select("id,name,description,image_path,image_alt,sort_order,active").eq("active", true).order("sort_order"),
-      supabase.from("battery_categories").select("id,slug,title,description,image_path,image_alt,whatsapp_message,sort_order,published").eq("published", true).order("sort_order"),
-      supabase.from("testimonials").select("id,display_name,body,testimonial_date,source,published").eq("published", true).order("created_at", { ascending: false }).limit(6),
+      supabase.from("battery_categories").select("id,slug,title,description,image_path,image_alt,sort_order,published").eq("published", true).order("sort_order"),
     ]);
-    if (s.error || b.error || c.error || t.error || !s.data) return fallback();
+    if (s.error || b.error || c.error || !s.data) return fallback();
     return {
       settings: { ...FALLBACK_SETTINGS, ...(s.data as unknown as SiteSettings) },
       brands: (b.data ?? []) as Brand[],
       categories: (c.data ?? []) as Category[],
-      testimonials: (t.data ?? []) as Testimonial[],
       fromDatabase: true,
     };
   } catch {
@@ -55,7 +52,7 @@ async function loadContent(): Promise<PublicContent> {
 }
 
 function fallback(): PublicContent {
-  return { settings: FALLBACK_SETTINGS, brands: FALLBACK_BRANDS, categories: FALLBACK_CATEGORIES, testimonials: [], fromDatabase: false };
+  return { settings: FALLBACK_SETTINGS, brands: FALLBACK_BRANDS, categories: FALLBACK_CATEGORIES, fromDatabase: false };
 }
 
 /** Uma leitura agrupada, cacheada e invalidada por tag após cada publicação no painel. */

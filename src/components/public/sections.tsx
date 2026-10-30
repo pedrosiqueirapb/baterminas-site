@@ -2,11 +2,10 @@ import Image from "next/image";
 import { Carousel } from "@/components/public/carousel";
 import { BadgeCheck, Banknote, Clock, MapPin, Phone, Star, Truck, Zap } from "lucide-react";
 import { InstagramIcon, WhatsappIcon } from "@/components/ui/brand-icons";
-import { MAPS_DESTINATION } from "@/lib/constants";
-import type { GoogleReviews } from "@/lib/google-places";
-import { formatWhatsapp, mapsUrl, telUrl, whatsappUrl } from "@/lib/whatsapp";
+import { GOOGLE_PLACE_ID, MAPS_DESTINATION } from "@/lib/constants";
+import { formatWhatsapp, mapsUrl, whatsappUrl } from "@/lib/whatsapp";
 import { publicImageUrl } from "@/services/content";
-import type { Brand, Category, SiteSettings, Testimonial } from "@/types/content";
+import type { Brand, Category, SiteSettings } from "@/types/content";
 
 const CATEGORY_DEFAULTS: Record<string, string> = {
   carros: "/images/categoria-carros.webp",
@@ -175,71 +174,21 @@ export function About({ s }: { s: SiteSettings }) {
   );
 }
 
-function Stars({ value }: { value: number }) {
-  return (
-    <span role="img" aria-label={`${value.toFixed(1).replace(".", ",")} de 5 estrelas`} className="inline-flex gap-0.5 text-brand-dark">
-      {[1, 2, 3, 4, 5].map((i) => (
-        <Star key={i} aria-hidden="true" className="h-4 w-4" fill={i <= Math.round(value) ? "currentColor" : "none"} />
-      ))}
-    </span>
-  );
+export function reviewsProfileUrl(s: SiteSettings): string {
+  return s.google_profile_url || `https://search.google.com/local/reviews?placeid=${GOOGLE_PLACE_ID}`;
 }
 
-export function reviewsProfileUrl(s: SiteSettings, google: GoogleReviews | null): string {
-  const placeId = process.env.GOOGLE_PLACE_ID;
-  const fallback = placeId && /^[A-Za-z0-9_-]+$/.test(placeId) ? `https://www.google.com/maps/search/?api=1&query=Baterminas&query_place_id=${placeId}` : "";
-  return s.google_profile_url || google?.mapsUri || fallback;
-}
-
-export function hasReviewsContent(s: SiteSettings, google: GoogleReviews | null, testimonials: Testimonial[]): boolean {
-  return s.show_reviews && ((google?.reviews.length ?? 0) > 0 || testimonials.length > 0);
-}
-
-const REVIEW_CARD = "card flex w-[85%] shrink-0 snap-start flex-col p-6 sm:w-[calc(50%-10px)] lg:w-[calc(33.333%-14px)]";
-
-export function Reviews({ s, google, testimonials }: { s: SiteSettings; google: GoogleReviews | null; testimonials: Testimonial[] }) {
-  if (!hasReviewsContent(s, google, testimonials)) return null;
-  const profile = reviewsProfileUrl(s, google);
+export function Reviews({ s }: { s: SiteSettings }) {
+  if (!s.show_reviews) return null;
   return (
     <section id="avaliacoes" aria-labelledby="t-aval" className="bg-white py-16 sm:py-24">
       <div className="container-page">
         <span className="eyebrow">Avaliações</span>
         <h2 id="t-aval" className="section-title max-w-2xl">O que dizem sobre a Baterminas</h2>
-
-        {google && (
-          <div className="mt-6 flex flex-wrap items-center gap-3 text-[0.95rem]">
-            <span className="font-display text-3xl font-bold">{google.rating.toFixed(1).replace(".", ",")}</span>
-            <Stars value={google.rating} />
-            <span className="text-muted">{google.total} avaliações no Google</span>
-          </div>
-        )}
-
-        <div className="mt-8">
-          <Carousel label="Avaliações de clientes">
-            {(google?.reviews ?? []).map((r, i) => (
-              <li key={`g-${i}`} className={REVIEW_CARD}>
-                <Stars value={r.rating} />
-                <blockquote className="mt-3 flex-1 text-[0.95rem]">{r.text}</blockquote>
-                <p className="mt-4 text-sm font-semibold">{r.author}</p>
-                <p className="text-sm text-muted">Avaliação no Google{r.when ? `, ${r.when}` : ""}</p>
-              </li>
-            ))}
-            {testimonials.map((t) => (
-              <li key={t.id} className={REVIEW_CARD}>
-                <blockquote className="flex-1 text-[0.95rem]">{t.body}</blockquote>
-                <p className="mt-4 text-sm font-semibold">{t.display_name}</p>
-                <p className="text-sm text-muted">Depoimento de cliente da loja</p>
-              </li>
-            ))}
-          </Carousel>
-        </div>
-
-        {google && <p className="mt-4 text-xs text-muted">Avaliações do Google. Fonte: Google Maps.</p>}
-        {profile && (
-          <a href={profile} {...ext} className="mt-4 inline-block text-sm font-semibold underline underline-offset-4 hover:text-brand-dark">
-            Ver todas as avaliações no Google
-          </a>
-        )}
+        <p className="mt-4 max-w-xl text-lg text-muted">Veja o que nossos clientes contam sobre o atendimento da loja.</p>
+        <a href={reviewsProfileUrl(s)} {...ext} className="btn btn-outline-dark mt-8">
+          <Star aria-hidden="true" className="h-5 w-5" /> Ver avaliações no Google
+        </a>
       </div>
     </section>
   );
@@ -271,7 +220,7 @@ export function Location({ s }: { s: SiteSettings }) {
         <div className="mt-10 grid gap-5 lg:grid-cols-2">
           <ul className="card divide-y divide-ink/10">
             <li className="flex gap-4 p-5"><MapPin aria-hidden="true" className="mt-1 h-5 w-5 shrink-0 text-brand-dark" /><div><p className="font-semibold">Endereço</p><address className="not-italic text-muted">{address}</address></div></li>
-            <li className="flex gap-4 p-5"><Phone aria-hidden="true" className="mt-1 h-5 w-5 shrink-0 text-brand-dark" /><div><p className="font-semibold">Telefone</p><a href={telUrl(s.phone)} className="text-muted underline-offset-2 hover:underline">{s.phone}</a></div></li>
+            <li className="flex gap-4 p-5"><Phone aria-hidden="true" className="mt-1 h-5 w-5 shrink-0 text-brand-dark" /><div><p className="font-semibold">Telefone</p><p className="text-muted">{s.phone}</p></div></li>
             <li className="flex gap-4 p-5"><WhatsappIcon className="mt-1 h-5 w-5 shrink-0 text-brand-dark" /><div><p className="font-semibold">WhatsApp</p><a href={whatsappUrl(s.whatsapp)} {...ext} className="text-muted underline-offset-2 hover:underline">{formatWhatsapp(s.whatsapp)}</a></div></li>
             <li className="flex gap-4 p-5">
               <Clock aria-hidden="true" className="mt-1 h-5 w-5 shrink-0 text-brand-dark" />
@@ -280,7 +229,7 @@ export function Location({ s }: { s: SiteSettings }) {
                 {s.opening_hours.length > 0 ? (
                   <ul className="text-muted">{s.opening_hours.map((h) => <li key={h.label}>{h.label}: {h.hours}</li>)}</ul>
                 ) : (
-                  <p className="text-muted">Consulte nossos horários pelo WhatsApp ou telefone.</p>
+                  <p className="text-muted">Consulte nossos horários pelo WhatsApp.</p>
                 )}
                 {s.hours_note && <p className="mt-1 text-sm text-muted">{s.hours_note}</p>}
               </div>

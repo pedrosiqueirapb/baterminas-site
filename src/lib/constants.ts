@@ -2,6 +2,13 @@ import type { Brand, Category, SiteSettings } from "@/types/content";
 
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
 
+/** Identificador público do perfil da loja no Google Maps (usado no link de avaliações). */
+export const GOOGLE_PLACE_ID = "ChIJ2UQ2EwBFpJQRCoDsmyZy9OQ";
+/**
+ * Identificador interno da conta do painel. O Supabase Auth exige um e-mail por usuário, mas o painel
+ * não envia nem recebe e-mails: o login usa apenas senha + código do autenticador.
+ */
+export const ADMIN_LOGIN_ID = "painel@baterminas.example.com";
 export const AUTOJADE_URL = "https://autojade.com.br/";
 export const MAPS_DESTINATION = "Av. Comendador Alexandrino Garcia, 1270 - Marta Helena, Uberlândia - MG";
 
@@ -19,7 +26,7 @@ export const FALLBACK_SETTINGS: SiteSettings = {
   postal_code: "",
   opening_hours: [],
   hours_note: "",
-  hero_title: "Baterias de qualidade para seguir em frente",
+  hero_title: "Loja de baterias em Uberlândia com atendimento rápido",
   hero_description:
     "Encontre a bateria ideal para o seu veículo com atendimento rápido, marcas de qualidade e entrega em toda Uberlândia.",
   hero_image_path: "",
@@ -33,9 +40,9 @@ export const FALLBACK_SETTINGS: SiteSettings = {
   cta_description: "Entre em contato com a Baterminas e consulte as opções disponíveis para o seu veículo.",
   footer_copyright: "© 2026 Baterminas. Todos os direitos reservados.",
   logo_path: "",
-  seo_title: "Baterminas | Loja de baterias em Uberlândia - MG",
+  seo_title: "Loja de baterias em Uberlândia - MG | Baterminas",
   seo_description:
-    "Encontre baterias para carros, motos, caminhões e aplicações estacionárias na Baterminas. Atendimento rápido e entrega em toda Uberlândia.",
+    "Loja de baterias em Uberlândia: baterias para carros, motos, caminhões, estacionárias e nobreaks. Atendimento rápido e entrega em toda a cidade.",
   show_reviews: true,
   show_about: true,
 };
@@ -51,11 +58,11 @@ export const FALLBACK_BRANDS: Brand[] = ["Moura", "Zetta", "Varta", "Formax"].ma
 }));
 
 export const FALLBACK_CATEGORIES: Category[] = [
-  { slug: "carros", title: "Baterias para carros", description: "Opções para veículos de passeio.", wa: "carro" },
-  { slug: "motos", title: "Baterias para motos", description: "Opções para motocicletas.", wa: "moto" },
-  { slug: "caminhoes", title: "Baterias para caminhões", description: "Opções para veículos pesados.", wa: "caminhão" },
-  { slug: "estacionarias", title: "Baterias estacionárias", description: "Opções para sistemas estacionários.", wa: "sistema estacionário" },
-  { slug: "nobreaks", title: "Baterias para nobreaks", description: "Opções para nobreaks.", wa: "nobreak" },
+  { slug: "carros", title: "Baterias para carros", description: "Opções para veículos de passeio." },
+  { slug: "motos", title: "Baterias para motos", description: "Opções para motocicletas." },
+  { slug: "caminhoes", title: "Baterias para caminhões", description: "Opções para veículos pesados." },
+  { slug: "estacionarias", title: "Baterias estacionárias", description: "Opções para sistemas estacionários." },
+  { slug: "nobreaks", title: "Baterias para nobreaks", description: "Opções para nobreaks." },
 ].map((c, i) => ({
   id: `fallback-${c.slug}`,
   slug: c.slug,
@@ -63,7 +70,6 @@ export const FALLBACK_CATEGORIES: Category[] = [
   description: c.description,
   image_path: "",
   image_alt: c.title,
-  whatsapp_message: "",
   sort_order: i,
   published: true,
 }));

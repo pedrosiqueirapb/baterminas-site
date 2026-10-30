@@ -49,17 +49,7 @@ export type Category = {
   description: string;
   image_path: string;
   image_alt: string;
-  whatsapp_message: string;
   sort_order: number;
-  published: boolean;
-};
-
-export type Testimonial = {
-  id: string;
-  display_name: string;
-  body: string;
-  testimonial_date: string | null;
-  source: "cliente_loja" | "site";
   published: boolean;
 };
 

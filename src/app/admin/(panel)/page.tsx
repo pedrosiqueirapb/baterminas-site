@@ -2,17 +2,15 @@ import { requireAdmin } from "@/lib/auth";
 
 export default async function AdminHome() {
   const { supabase } = await requireAdmin();
-  const [b, c, t] = await Promise.all([
+  const [b, c] = await Promise.all([
     supabase.from("battery_brands").select("id", { count: "exact", head: true }),
     supabase.from("battery_categories").select("id", { count: "exact", head: true }),
-    supabase.from("testimonials").select("id", { count: "exact", head: true }),
   ]);
   const cards = [
     { href: "/admin/configuracoes", title: "Configurações", text: "Contatos, endereço, horários, textos e SEO." },
     { href: "/admin/marcas", title: "Marcas", text: `${b.count ?? 0} cadastradas. Criar, editar, ordenar e ativar.` },
     { href: "/admin/categorias", title: "Categorias", text: `${c.count ?? 0} cadastradas. Textos, imagens e ordem.` },
     { href: "/admin/imagens", title: "Imagens", text: "Logo, imagem principal e imagem da seção sobre." },
-    { href: "/admin/depoimentos", title: "Depoimentos", text: `${t.count ?? 0} cadastrados. Somente com autorização.` },
   ];
   return (
     <>

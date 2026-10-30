@@ -2,20 +2,21 @@
 // em ambiente local e seguro. A chave de serviço nunca deve ser colocada em hospedagem pública.
 //
 // Uso:
-//   node --env-file=.env.local scripts/create-admin.mjs criar admin@exemplo.com
-//   node --env-file=.env.local scripts/create-admin.mjs resetar-mfa admin@exemplo.com
-//   node --env-file=.env.local scripts/create-admin.mjs redefinir-senha admin@exemplo.com
+//   node --env-file=.env.local scripts/create-admin.mjs criar
+//   node --env-file=.env.local scripts/create-admin.mjs resetar-mfa
 //
 // A senha é lida de forma interativa (não aparece em histórico nem em argumentos).
 // Para uso automatizado, ADMIN_PASSWORD pode ser definida no ambiente do comando.
 import { createClient } from "@supabase/supabase-js";
 import { createInterface } from "node:readline";
 
-const [, , command, email] = process.argv;
+// Mesmo identificador de src/lib/constants.ts (ADMIN_LOGIN_ID). Nenhum e-mail real é usado.
+const email = "painel@baterminas.example.com";
+const [, , command] = process.argv;
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-if (!url || !key || !command || !email) {
-  console.error("Uso: create-admin.mjs <criar|resetar-mfa> <email>. Defina NEXT_PUBLIC_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY.");
+if (!url || !key || !command) {
+  console.error("Uso: create-admin.mjs <criar|resetar-mfa>. Defina NEXT_PUBLIC_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY.");
   process.exit(1);
 }
 const supabase = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
@@ -54,15 +55,7 @@ if (command === "criar") {
   }
   const { error } = await supabase.from("admin_users").upsert({ user_id: user.id });
   if (error) { console.error("Falha ao autorizar:", error.message); process.exit(1); }
-  console.log(`Administrador autorizado: ${email}. No primeiro acesso, configure o segundo fator em /admin/mfa.`);
-} else if (command === "redefinir-senha") {
-  const user = await findUser();
-  if (!user) { console.error("Usuário não encontrado."); process.exit(1); }
-  const pw = process.env.ADMIN_PASSWORD ?? (await askHidden("Nova senha (mínimo 12 caracteres, com maiúscula, minúscula, número e símbolo): "));
-  if (!strongPassword(pw)) { console.error("Senha fraca. Operação cancelada."); process.exit(1); }
-  const { error } = await supabase.auth.admin.updateUserById(user.id, { password: pw });
-  if (error) { console.error("Falha ao redefinir:", error.message); process.exit(1); }
-  console.log("Senha redefinida.");
+  console.log(`Administrador autorizado. No primeiro acesso, configure o segundo fator em /admin/mfa.`);
 } else if (command === "resetar-mfa") {
   const user = await findUser();
   if (!user) { console.error("Usuário não encontrado."); process.exit(1); }

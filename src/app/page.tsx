@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Footer, FloatingWhatsapp } from "@/components/public/footer";
 import { Header } from "@/components/public/header";
-import { About, Brands, Categories, Cta, Features, Hero, Location, Reviews, hasReviewsContent } from "@/components/public/sections";
-import { getGoogleReviews } from "@/lib/google-places";
+import { About, Brands, Categories, Cta, Features, Hero, Location, Reviews } from "@/components/public/sections";
 import { jsonLd } from "@/lib/seo";
 import { getContentSafe } from "@/services/content";
 
@@ -20,22 +19,21 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const { settings, brands, categories, testimonials } = await getContentSafe();
-  const google = settings.show_reviews ? await getGoogleReviews() : null;
+  const { settings, brands, categories } = await getContentSafe();
   return (
     <>
-      <Header settings={settings} showReviewsLink={hasReviewsContent(settings, google, testimonials)} />
+      <Header settings={settings} />
       <main id="conteudo">
         <Hero s={settings} />
         <Features />
         <Categories items={categories} s={settings} />
         <Brands items={brands} s={settings} />
         <About s={settings} />
-        <Reviews s={settings} google={google} testimonials={testimonials} />
+        <Reviews s={settings} />
         <Cta s={settings} />
         <Location s={settings} />
       </main>
-      <Footer s={settings} showReviewsLink={hasReviewsContent(settings, google, testimonials)} />
+      <Footer s={settings} />
       <FloatingWhatsapp s={settings} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(settings) }} />
     </>

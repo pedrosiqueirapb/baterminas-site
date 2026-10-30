@@ -12,7 +12,7 @@ Next.js 15 (App Router), React 19, TypeScript estrito, Tailwind CSS 4, Supabase 
 src/app/                 rotas (/, /privacidade, /termos, /admin/*), sitemap, robots, 404/erro
 src/app/admin/actions/   server actions (auth/MFA e CRUD), sempre com requireAdmin()
 src/components/public    seções do site; components/admin: formulários do painel
-src/lib/                 auth (guard aal2), validation (zod), text (capitalização), whatsapp, seo, google-places
+src/lib/                 auth (guard aal2), validation (zod), text (capitalização), whatsapp, seo
 src/services/content.ts  leitura pública agrupada, com cache por tag e contingência
 src/tests/               testes unitários
 supabase/migrations/     esquema, RLS, storage e dados iniciais
@@ -51,12 +51,12 @@ Executado só pelo responsável pela implantação, em máquina segura:
 
 ```bash
 # coloque SUPABASE_SERVICE_ROLE_KEY apenas no seu .env.local
-node --env-file=.env.local scripts/create-admin.mjs criar admin@exemplo.com
+node --env-file=.env.local scripts/create-admin.mjs criar
 ```
 
 A senha é digitada no terminal (mínimo 12 caracteres, com maiúscula, minúscula, número e símbolo). Depois, acesse `/admin/login`, entre e configure o aplicativo autenticador em `/admin/mfa`.
 
-**Recuperação de acesso** (celular perdido): `node --env-file=.env.local scripts/create-admin.mjs resetar-mfa admin@exemplo.com`. O usuário configurará um novo autenticador no próximo login.
+**Recuperação de acesso** (celular perdido): `node --env-file=.env.local scripts/create-admin.mjs resetar-mfa`. O usuário configurará um novo autenticador no próximo login.
 
 Nunca publique a chave de serviço em hospedagem, repositório ou chat.
 
@@ -70,9 +70,7 @@ Nunca publique a chave de serviço em hospedagem, repositório ou chat.
 
 ## Avaliações do Google
 
-A integração oficial usa a Places API (New) e só é ativada com `GOOGLE_PLACES_API_KEY` e `GOOGLE_PLACE_ID` definidos. A API retorna até 5 avaliações. Sem as variáveis, a seção mostra o botão para o perfil (se o link estiver em Configurações) e os depoimentos manuais autorizados.
-
-Pendência: localizar o `place_id` do perfil "Bater Minas - Loja de Baterias em Uberlândia" (Google Place ID Finder) e criar a chave com restrição à Places API.
+A seção de avaliações exibe um botão que leva ao perfil da loja no Google. Não há API paga nem cadastro de avaliações no painel. O link usa o `GOOGLE_PLACE_ID` fixo em `src/lib/constants.ts`; em Configurações é possível informar um link próprio do perfil, que tem prioridade.
 
 ## Build e implantação
 

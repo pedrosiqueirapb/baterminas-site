@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { LayoutDashboard, Settings, Tag, Layers, ImageIcon, MessageSquareQuote, ExternalLink, LogOut } from "lucide-react";
+import { LayoutDashboard, Settings, Tag, Layers, ImageIcon, ExternalLink, LogOut } from "lucide-react";
 import { signOut } from "@/app/admin/actions/auth";
 import { Logo } from "@/components/public/logo";
 import { requireAdmin } from "@/lib/auth";
@@ -13,11 +13,10 @@ const NAV = [
   { href: "/admin/marcas", label: "Marcas", icon: Tag },
   { href: "/admin/categorias", label: "Categorias", icon: Layers },
   { href: "/admin/imagens", label: "Imagens", icon: ImageIcon },
-  { href: "/admin/depoimentos", label: "Depoimentos", icon: MessageSquareQuote },
 ];
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
-  const { user } = await requireAdmin();
+  await requireAdmin();
   return (
     <div className="min-h-screen bg-paper">
       <header className="on-dark bg-ink text-white">
@@ -50,7 +49,6 @@ export default async function PanelLayout({ children }: { children: React.ReactN
         </nav>
       </header>
       <main className="container-page py-8">
-        <p className="mb-6 text-xs text-muted">Conectado como {user.email}</p>
         {children}
       </main>
     </div>

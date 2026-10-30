@@ -4,11 +4,11 @@ import { WhatsappIcon } from "@/components/ui/brand-icons";
 import { whatsappUrl } from "@/lib/whatsapp";
 import type { SiteSettings } from "@/types/content";
 
-export function Header({ settings, showReviewsLink }: { settings: SiteSettings; showReviewsLink?: boolean }) {
+export function Header({ settings }: { settings: SiteSettings }) {
   const items: NavItem[] = [
     { href: "/#baterias", label: "Baterias" },
     { href: "/#marcas", label: "Marcas" },
-    ...(settings.show_reviews && showReviewsLink !== false ? [{ href: "/#avaliacoes", label: "Avaliações" }] : []),
+    ...(settings.show_reviews ? [{ href: "/#avaliacoes", label: "Avaliações" }] : []),
     { href: "/#contato", label: "Localização e contato" },
   ];
   const wa = whatsappUrl(settings.whatsapp);

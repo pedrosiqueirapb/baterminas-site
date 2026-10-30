@@ -77,17 +77,6 @@ export const categorySchema = z.object({
   published: z.boolean(),
 });
 
-export const testimonialSchema = z
-  .object({
-    display_name: plain(60, 1),
-    body: plain(500, 5),
-    testimonial_date: z.string().trim().refine((v) => v === "" || /^\d{4}-\d{2}-\d{2}$/.test(v), "Data inválida."),
-    source: z.enum(["cliente_loja", "site"]),
-    authorized: z.boolean(),
-    published: z.boolean(),
-  })
-  .refine((v) => !v.published || v.authorized, { message: "Só é possível publicar depoimentos autorizados.", path: ["published"] });
-
 export const uuidSchema = z.string().uuid();
 
 export const IMAGE_RULES = {

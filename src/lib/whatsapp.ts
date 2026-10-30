@@ -16,10 +16,6 @@ export function formatWhatsapp(number: string): string {
   return `+${d}`;
 }
 
-export function telUrl(phone: string): string {
-  return `tel:+55${phone.replace(/\D/g, "").replace(/^55/, "")}`;
-}
-
 export function mapsUrl(destination: string): string {
   return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
 }

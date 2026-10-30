@@ -1,4 +1,5 @@
-import { SITE_URL } from "@/lib/constants";
+import { MAPS_DESTINATION, SITE_URL } from "@/lib/constants";
+import { mapsUrl } from "@/lib/whatsapp";
 import type { SiteSettings } from "@/types/content";
 
 const ORDER = ["segunda", "terça", "quarta", "quinta", "sexta", "sábado", "domingo"];
@@ -32,7 +33,12 @@ export function jsonLd(s: SiteSettings): string {
     "@context": "https://schema.org",
     "@type": "AutoPartsStore",
     name: s.business_name,
+    "@id": `${SITE_URL}/#loja`,
     url: SITE_URL,
+    image: `${SITE_URL}/og-image.png`,
+    logo: `${SITE_URL}/logo.png`,
+    description: s.seo_description,
+    hasMap: mapsUrl(MAPS_DESTINATION),
     telephone: `+55${s.phone.replace(/\D/g, "")}`,
     address: {
       "@type": "PostalAddress",

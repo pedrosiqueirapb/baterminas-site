@@ -8,9 +8,9 @@ const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit", display: 
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: "Baterminas | Loja de baterias em Uberlândia - MG", template: "%s | Baterminas" },
+  title: { default: "Loja de baterias em Uberlândia - MG | Baterminas", template: "%s | Baterminas" },
   description:
-    "Encontre baterias para carros, motos, caminhões e aplicações estacionárias na Baterminas. Atendimento rápido e entrega em toda Uberlândia.",
+    "Loja de baterias em Uberlândia: baterias para carros, motos, caminhões, estacionárias e nobreaks. Atendimento rápido e entrega em toda a cidade.",
   applicationName: "Baterminas",
   openGraph: { type: "website", locale: "pt_BR", siteName: "Baterminas" },
   twitter: { card: "summary_large_image" },
