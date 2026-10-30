@@ -68,8 +68,8 @@ export async function saveSettings(_: ActionResult | undefined, fd: FormData): P
     show_reviews: bool(fd, "show_reviews"), show_about: bool(fd, "show_about"),
   });
   if (!parsed.success) return fail(parsed.error);
-  const { error } = await admin.supabase.from("site_settings").update(parsed.data).eq("id", 1);
-  if (error) return dbError();
+  const { data: rows, error } = await admin.supabase.from("site_settings").update(parsed.data).eq("id", 1).select("id");
+  if (error || !rows?.length) return dbError();
   await logAdminAction(admin.supabase, admin.user.id, "update", "site_settings", "1");
   publish();
   return { ok: true, message: "Configurações publicadas." };
@@ -88,8 +88,8 @@ export async function uploadSiteImage(_: ActionResult | undefined, fd: FormData)
   const { data: current } = await admin.supabase.from("site_settings").select(column).eq("id", 1).maybeSingle();
   const up = await uploadImage(admin, file, slot);
   if ("error" in up) return { ok: false, message: up.error };
-  const { error } = await admin.supabase.from("site_settings").update({ [column]: up.path }).eq("id", 1);
-  if (error) { await removeImage(admin, up.path); return dbError(); }
+  const { data: rows, error } = await admin.supabase.from("site_settings").update({ [column]: up.path }).eq("id", 1).select("id");
+  if (error || !rows?.length) { await removeImage(admin, up.path); return dbError(); }
   await removeImage(admin, (current as Record<string, string> | null)?.[column]);
   await logAdminAction(admin.supabase, admin.user.id, "upload", "site_settings", slot);
   publish();
@@ -102,8 +102,8 @@ export async function resetSiteImage(_: ActionResult | undefined, fd: FormData):
   if (!(slot in SLOTS)) return { ok: false, message: "Local de imagem inválido." };
   const column = SLOTS[slot];
   const { data: current } = await admin.supabase.from("site_settings").select(column).eq("id", 1).maybeSingle();
-  const { error } = await admin.supabase.from("site_settings").update({ [column]: "" }).eq("id", 1);
-  if (error) return dbError();
+  const { data: rows, error } = await admin.supabase.from("site_settings").update({ [column]: "" }).eq("id", 1).select("id");
+  if (error || !rows?.length) return dbError();
   await removeImage(admin, (current as Record<string, string> | null)?.[column]);
   await logAdminAction(admin.supabase, admin.user.id, "reset-image", "site_settings", slot);
   publish();
@@ -131,8 +131,8 @@ export async function saveBrand(_: ActionResult | undefined, fd: FormData): Prom
   if (idRaw) {
     if (!uuidSchema.safeParse(idRaw).success) return { ok: false, message: "Identificador inválido." };
     const { data: old } = await admin.supabase.from("battery_brands").select("image_path").eq("id", idRaw).maybeSingle();
-    const { error } = await admin.supabase.from("battery_brands").update({ ...parsed.data, ...(imagePath ? { image_path: imagePath } : {}) }).eq("id", idRaw);
-    if (error) { await removeImage(admin, imagePath); return dbError(); }
+    const { data: rows, error } = await admin.supabase.from("battery_brands").update({ ...parsed.data, ...(imagePath ? { image_path: imagePath } : {}) }).eq("id", idRaw).select("id");
+    if (error || !rows?.length) { await removeImage(admin, imagePath); return dbError(); }
     if (imagePath) await removeImage(admin, old?.image_path);
     await logAdminAction(admin.supabase, admin.user.id, "update", "battery_brands", idRaw);
   } else {
@@ -151,8 +151,8 @@ export async function deleteBrand(_: ActionResult | undefined, fd: FormData): Pr
   const id = str(fd, "id");
   if (!uuidSchema.safeParse(id).success) return { ok: false, message: "Identificador inválido." };
   const { data: old } = await admin.supabase.from("battery_brands").select("image_path").eq("id", id).maybeSingle();
-  const { error } = await admin.supabase.from("battery_brands").delete().eq("id", id);
-  if (error) return dbError();
+  const { data: rows, error } = await admin.supabase.from("battery_brands").delete().eq("id", id).select("id");
+  if (error || !rows?.length) return dbError();
   await removeImage(admin, old?.image_path);
   await logAdminAction(admin.supabase, admin.user.id, "delete", "battery_brands", id);
   publish();
@@ -200,8 +200,8 @@ export async function saveCategory(_: ActionResult | undefined, fd: FormData): P
   }
   if (!id) return createCategory(admin, parsed.data, imagePath);
   const { data: old } = await admin.supabase.from("battery_categories").select("image_path").eq("id", id).maybeSingle();
-  const { error } = await admin.supabase.from("battery_categories").update({ ...parsed.data, ...(imagePath ? { image_path: imagePath } : {}) }).eq("id", id);
-  if (error) { await removeImage(admin, imagePath); return dbError(); }
+  const { data: rows, error } = await admin.supabase.from("battery_categories").update({ ...parsed.data, ...(imagePath ? { image_path: imagePath } : {}) }).eq("id", id).select("id");
+  if (error || !rows?.length) { await removeImage(admin, imagePath); return dbError(); }
   if (imagePath) await removeImage(admin, old?.image_path);
   await logAdminAction(admin.supabase, admin.user.id, "update", "battery_categories", id);
   publish();
@@ -230,8 +230,8 @@ export async function deleteCategory(_: ActionResult | undefined, fd: FormData):
   const id = str(fd, "id");
   if (!uuidSchema.safeParse(id).success) return { ok: false, message: "Identificador inválido." };
   const { data: old } = await admin.supabase.from("battery_categories").select("image_path").eq("id", id).maybeSingle();
-  const { error } = await admin.supabase.from("battery_categories").delete().eq("id", id);
-  if (error) return dbError();
+  const { data: rows, error } = await admin.supabase.from("battery_categories").delete().eq("id", id).select("id");
+  if (error || !rows?.length) return dbError();
   await removeImage(admin, old?.image_path);
   await logAdminAction(admin.supabase, admin.user.id, "delete", "battery_categories", id);
   publish();

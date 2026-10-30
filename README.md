@@ -39,7 +39,7 @@ Sem variáveis do Supabase o site público abre com o conteúdo de contingência
 ## Supabase
 
 1. Crie um projeto em supabase.com.
-2. Aplique a migração `supabase/migrations/20261029000000_initial_schema.sql` (SQL Editor, ou `supabase db push` com a CLI após `supabase link`).
+2. Aplique, em ordem, as migrações de `supabase/migrations/` (`20261029000000_initial_schema.sql` e `20261030000000_remove_testimonials.sql`) no SQL Editor, ou com `supabase db push` após `supabase link`.
 3. Em **Authentication > Providers**, mantenha E-mail ligado e **desative "Allow new users to sign up"**. Em **Authentication > Multi-Factor**, confirme que TOTP está habilitado.
 4. Em **Authentication > Policies**, ative proteção de senha vazada e defina o mínimo de 12 caracteres.
 5. O bucket `site-images` é criado pela migração (público, 3 MB, JPEG/PNG/WebP/AVIF; escrita só por administradores com aal2).
@@ -93,3 +93,23 @@ Hospedagem sugerida: Vercel. Configure as variáveis de ambiente (exceto a chave
 - Textos devem seguir a regra: só a primeira letra da frase em maiúscula (exceto nomes próprios, marcas e siglas). O painel valida.
 - Atualize dependências periodicamente (`npm outdated`) e rode os testes.
 - Novas migrações vão em `supabase/migrations` com data no nome.
+
+## Variáveis de ambiente em produção (Vercel)
+
+| Variável | Onde | Observação |
+|---|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Vercel | URL do projeto Supabase. |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Vercel | Chave pública; a proteção dos dados vem das políticas RLS. |
+| `NEXT_PUBLIC_SITE_URL` | Vercel | Domínio final, sem barra no fim (canônicas, sitemap, Open Graph). |
+| `SUPABASE_SERVICE_ROLE_KEY` | **Somente `.env.local` do implantador** | Nunca na Vercel, no repositório ou no chat. |
+
+## Checklist antes de publicar
+
+1. Migrações aplicadas e `Allow new users to sign up` desativado no Supabase.
+2. Em **Authentication > URL Configuration**, `Site URL` com o domínio final.
+3. Primeiro administrador criado (`create-admin.mjs criar`) e 2FA configurado em `/admin/mfa`.
+4. Variáveis da tabela acima definidas na Vercel; Framework Preset **Next.js**.
+5. `npm run lint && npx tsc --noEmit && npm test && npm run build` sem erros e `npm audit --omit=dev` sem vulnerabilidades.
+6. Domínio no Google Search Console e envio do `/sitemap.xml`.
+
+**Rollback:** na Vercel, promova o deploy anterior (Deployments > Promote to Production). As migrações são aditivas; antes de alterar o banco, faça backup pelo painel do Supabase.
