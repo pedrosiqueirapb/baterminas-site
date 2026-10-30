@@ -11,7 +11,7 @@ import { createClient } from "@supabase/supabase-js";
 import { createInterface } from "node:readline";
 
 // Mesmo identificador de src/lib/constants.ts (ADMIN_LOGIN_ID). Nenhum e-mail real é usado.
-const email = "painel@baterminas.example.com";
+const email = "baterminas2024@gmail.com";
 const [, , command] = process.argv;
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY;

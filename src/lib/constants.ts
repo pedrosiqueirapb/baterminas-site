@@ -8,7 +8,7 @@ export const GOOGLE_PLACE_ID = "ChIJ2UQ2EwBFpJQRCoDsmyZy9OQ";
  * Identificador interno da conta do painel. O Supabase Auth exige um e-mail por usuário, mas o painel
  * não envia nem recebe e-mails: o login usa apenas senha + código do autenticador.
  */
-export const ADMIN_LOGIN_ID = "painel@baterminas.example.com";
+export const ADMIN_LOGIN_ID = "baterminas2024@gmail.com";
 export const AUTOJADE_URL = "https://autojade.com.br/";
 export const MAPS_DESTINATION = "Av. Comendador Alexandrino Garcia, 1270 - Marta Helena, Uberlândia - MG";
 

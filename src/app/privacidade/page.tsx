@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <LegalPage title="Política de privacidade" updated="29 de outubro de 2026">
+    <LegalPage title="Política de privacidade" updated="30 de outubro de 2026">
       <p>Esta política explica como o site da Baterminas trata informações. O site é institucional e não possui formulários públicos, cadastro de clientes nem comércio eletrônico.</p>
       <h2>Informações que coletamos</h2>
       <ul>
