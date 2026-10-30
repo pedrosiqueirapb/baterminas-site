@@ -4,7 +4,7 @@ import { formatWhatsapp, mapsUrl, normalizeWhatsapp, whatsappUrl } from "@/lib/w
 import { brandSchema, settingsSchema, sniffImageType } from "@/lib/validation";
 import { jsonLd } from "@/lib/seo";
 import { FALLBACK_SETTINGS } from "@/lib/constants";
-import { parseHours } from "@/lib/hours";
+import { collectHours } from "@/lib/hours";
 
 describe("regra de capitalização", () => {
   it.each([
@@ -39,6 +39,23 @@ describe("whatsapp e links", () => {
   });
 });
 
+describe("telefone e whatsapp digitados com pontuação", () => {
+  const base = { ...FALLBACK_SETTINGS, opening_hours: [] };
+  it.each(["(34) 3229-5639", "34 3229 5639", "3432295639", "34-3229.5639", "(34)32295639"])("normaliza telefone %s", (v) => {
+    const r = settingsSchema.safeParse({ ...base, phone: v });
+    expect(r.success && r.data.phone).toBe("(34) 3229-5639");
+  });
+  it.each(["(34) 99995-4450", "+55 (34) 99995-4450", "34 9 9995 4450", "5534999954450", "34-99995-4450"])("normaliza whatsapp %s", (v) => {
+    const r = settingsSchema.safeParse({ ...base, whatsapp: v });
+    expect(r.success && r.data.whatsapp).toBe("5534999954450");
+    expect(whatsappUrl(r.success ? r.data.whatsapp : "")).toBe("https://wa.me/5534999954450");
+  });
+  it("rejeita números inválidos", () => {
+    expect(settingsSchema.safeParse({ ...base, phone: "123" }).success).toBe(false);
+    expect(settingsSchema.safeParse({ ...base, whatsapp: "()-" }).success).toBe(false);
+  });
+});
+
 describe("validação", () => {
   it("rejeita título em Title Case nas marcas", () => {
     const r = brandSchema.safeParse({ name: "Moura", description: "Baterias Para Carros", image_alt: "", sort_order: 1, active: true });
@@ -55,8 +72,8 @@ describe("validação", () => {
     expect(settingsSchema.safeParse({ ...ok, instagram_url: "javascript:alert(1)" }).success).toBe(false);
     expect(settingsSchema.safeParse({ ...ok, google_profile_url: "https://evil.example.com/x" }).success).toBe(false);
   });
-  it("analisa horários", () => {
-    expect(parseHours("Segunda a sexta | 08:00 às 18:00\n")).toEqual([{ label: "Segunda a sexta", hours: "08:00 às 18:00" }]);
+  it("junta períodos e ignora linhas vazias", () => {
+    expect(collectHours(["Segunda a sexta", "", " "], ["08:00 às 18:00", "", ""])).toEqual([{ label: "Segunda a sexta", hours: "08:00 às 18:00" }]);
   });
 });
 

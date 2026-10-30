@@ -9,6 +9,12 @@ const text = (max: number, min = 0) =>
     .max(max, `Use no máximo ${max} caracteres.`)
     .refine((v) => v === "" || followsSentenceCase(v), CAPITALIZATION_MESSAGE);
 
+/** Aceita qualquer pontuação digitada e guarda sempre no formato (34) 3229-5639. */
+export function formatPhone(value: string): string {
+  const d = value.replace(/\D/g, "");
+  return d.length === 11 ? `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}` : `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+}
+
 const plain = (max: number, min = 0) => z.string().trim().min(min, min ? "Campo obrigatório." : undefined).max(max, `Use no máximo ${max} caracteres.`);
 
 const httpsUrl = z
@@ -29,7 +35,11 @@ export const hoursSchema = z
 
 export const settingsSchema = z.object({
   business_name: plain(80, 1),
-  phone: z.string().trim().regex(/^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/, "Telefone inválido. Exemplo: (34) 3229-5639"),
+  phone: z
+    .string()
+    .trim()
+    .refine((v) => /^\d{10,11}$/.test(v.replace(/\D/g, "")), "Telefone inválido. Exemplo: (34) 3229-5639")
+    .transform(formatPhone),
   whatsapp: z
     .string()
     .trim()

@@ -1,10 +1,11 @@
 "use client";
 
-import { createContext, useActionState, useCallback, useContext, useEffect, useRef, useState } from "react";
-import { useFormStatus } from "react-dom";
+import { createContext, startTransition, useActionState, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { CheckCircle2, AlertCircle, Pencil, Trash2 } from "lucide-react";
 import type { ActionResult } from "@/types/content";
 
+/** Indica envio em andamento (o reset automático do React 19 é evitado para não apagar o que foi digitado). */
+const PendingCtx = createContext(false);
 const ErrorsCtx = createContext<Record<string, string>>({});
 /** Fornecido pelo EditDialog: permite fechar o formulário após salvar ou cancelar. */
 export const DialogCloseCtx = createContext<(() => void) | null>(null);
@@ -14,7 +15,7 @@ type Action = (prev: ActionResult | undefined, fd: FormData) => Promise<ActionRe
 const ICON_BUTTON = "inline-flex h-11 w-11 items-center justify-center rounded-lg transition-colors disabled:opacity-60";
 
 export function SubmitButton({ children, variant = "primary", iconOnly = false }: { children: React.ReactNode; variant?: "primary" | "danger" | "dark"; iconOnly?: boolean }) {
-  const { pending } = useFormStatus();
+  const pending = useContext(PendingCtx);
   if (iconOnly) {
     return (
       <button type="submit" disabled={pending} aria-label={String(children)} title={String(children)} className={`${ICON_BUTTON} border border-alert/40 bg-white text-alert hover:bg-alert/10`}>
@@ -46,7 +47,7 @@ export function AdminForm({
   action: Action; children: React.ReactNode;
   submitLabel?: string; className?: string; resetOnSuccess?: boolean; confirmMessage?: string; variant?: "primary" | "danger" | "dark"; iconOnly?: boolean;
 }) {
-  const [state, formAction] = useActionState(action, undefined);
+  const [state, formAction, pending] = useActionState(action, undefined);
   const ref = useRef<HTMLFormElement>(null);
   const closeDialog = useContext(DialogCloseCtx);
   useEffect(() => {
@@ -58,10 +59,15 @@ export function AdminForm({
   return (
     <form
       ref={ref}
-      action={formAction}
       className={className}
-      onSubmit={(e) => { if (confirmMessage && !window.confirm(confirmMessage)) e.preventDefault(); }}
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (confirmMessage && !window.confirm(confirmMessage)) return;
+        const data = new FormData(e.currentTarget);
+        startTransition(() => formAction(data));
+      }}
     >
+      <PendingCtx.Provider value={pending}>
       <ErrorsCtx.Provider value={errors}>{children}</ErrorsCtx.Provider>
       <Feedback state={state} />
       <div className="flex flex-wrap items-center gap-3">
@@ -70,6 +76,7 @@ export function AdminForm({
           <button type="button" onClick={closeDialog} className="btn btn-outline-dark !min-h-11 !py-2">Cancelar</button>
         )}
       </div>
+      </PendingCtx.Provider>
     </form>
   );
 }

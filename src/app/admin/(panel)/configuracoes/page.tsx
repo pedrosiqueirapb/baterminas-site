@@ -3,7 +3,7 @@ import { saveSettings } from "@/app/admin/actions/content";
 import { AdminForm, Field } from "@/components/admin/forms";
 import { requireAdmin } from "@/lib/auth";
 import { FALLBACK_SETTINGS } from "@/lib/constants";
-import { hoursToText } from "@/lib/hours";
+import { HoursEditor } from "@/components/admin/hours-editor";
 import type { SiteSettings } from "@/types/content";
 
 export const metadata: Metadata = { title: "Configurações" };
@@ -36,9 +36,7 @@ export default async function SettingsPage() {
               <Field label="Estado (sigla)" name="state"><input id="state" name="state" maxLength={2} defaultValue={s.state} className="field" required /></Field>
               <Field label="CEP (opcional)" name="postal_code"><input id="postal_code" name="postal_code" defaultValue={s.postal_code} className="field" /></Field>
               <div className="sm:col-span-2">
-                <Field label="Horário de funcionamento" name="opening_hours" hint="Uma linha por período, no formato: Segunda a sexta | 08:00 às 18:00. Deixe vazio para não exibir horários.">
-                  <textarea id="opening_hours" name="opening_hours" rows={4} defaultValue={hoursToText(s.opening_hours)} className="field" />
-                </Field>
+                <Field label="Horário de funcionamento" name="opening_hours" hint="Deixe em branco para não exibir horários."><HoursEditor initial={s.opening_hours} /></Field>
               </div>
               <div className="sm:col-span-2">
                 <Field label="Observação sobre horários (opcional)" name="hours_note"><input id="hours_note" name="hours_note" defaultValue={s.hours_note} className="field" /></Field>
@@ -52,7 +50,7 @@ export default async function SettingsPage() {
               <Field label="Texto alternativo da imagem principal" name="hero_image_alt"><input id="hero_image_alt" name="hero_image_alt" defaultValue={s.hero_image_alt} className="field" /></Field>
               <Field label="Título da seção sobre a loja" name="about_title"><input id="about_title" name="about_title" defaultValue={s.about_title} className="field" required /></Field>
               <Field label="Texto da seção sobre a loja" name="about_text"><textarea id="about_text" name="about_text" rows={3} defaultValue={s.about_text} className="field" required /></Field>
-              <Field label="Texto alternativo da imagem da seção sobre" name="about_image_alt"><input id="about_image_alt" name="about_image_alt" defaultValue={s.about_image_alt} className="field" /></Field>
+              <Field label="Texto alternativo da imagem da seção sobre a loja" name="about_image_alt"><input id="about_image_alt" name="about_image_alt" defaultValue={s.about_image_alt} className="field" /></Field>
               <Field label="Título da chamada final" name="cta_title"><input id="cta_title" name="cta_title" defaultValue={s.cta_title} className="field" required /></Field>
               <Field label="Descrição da chamada final" name="cta_description"><textarea id="cta_description" name="cta_description" rows={2} defaultValue={s.cta_description} className="field" required /></Field>
               <Field label="Texto de direitos autorais" name="footer_copyright"><input id="footer_copyright" name="footer_copyright" defaultValue={s.footer_copyright} className="field" required /></Field>

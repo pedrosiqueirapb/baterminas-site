@@ -3,7 +3,7 @@
 import { randomUUID } from "node:crypto";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { logAdminAction, requireAdmin } from "@/lib/auth";
-import { parseHours } from "@/lib/hours";
+import { collectHours } from "@/lib/hours";
 import {
   IMAGE_RULES, brandSchema, categorySchema, settingsSchema, sniffImageType, uuidSchema,
 } from "@/lib/validation";
@@ -60,7 +60,7 @@ export async function saveSettings(_: ActionResult | undefined, fd: FormData): P
     instagram_url: str(fd, "instagram_url"), google_profile_url: str(fd, "google_profile_url"),
     address_line: str(fd, "address_line"), address_complement: str(fd, "address_complement"),
     neighborhood: str(fd, "neighborhood"), city: str(fd, "city"), state: str(fd, "state"), postal_code: str(fd, "postal_code"),
-    opening_hours: parseHours(str(fd, "opening_hours")), hours_note: str(fd, "hours_note"),
+    opening_hours: collectHours(fd.getAll("hours_label").map(String), fd.getAll("hours_value").map(String)), hours_note: str(fd, "hours_note"),
     hero_title: str(fd, "hero_title"), hero_description: str(fd, "hero_description"), hero_image_alt: str(fd, "hero_image_alt"),
     about_title: str(fd, "about_title"), about_text: str(fd, "about_text"), about_image_alt: str(fd, "about_image_alt"),
     cta_title: str(fd, "cta_title"), cta_description: str(fd, "cta_description"),

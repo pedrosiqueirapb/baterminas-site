@@ -1,15 +1,8 @@
-/** Converte linhas "Seg a sex | 08:00 às 18:00" em estrutura de horários. */
-export function parseHours(raw: string): { label: string; hours: string }[] {
-  return raw
-    .split("\n")
-    .map((l) => l.trim())
-    .filter(Boolean)
-    .map((l) => {
-      const [label, ...rest] = l.split("|");
-      return { label: label.trim(), hours: rest.join("|").trim() };
-    });
-}
+import type { OpeningHour } from "@/types/content";
 
-export function hoursToText(hours: { label: string; hours: string }[]): string {
-  return hours.map((h) => `${h.label} | ${h.hours}`).join("\n");
+/** Junta as listas enviadas pelo formulário e descarta períodos totalmente vazios. */
+export function collectHours(labels: string[], values: string[]): OpeningHour[] {
+  return labels
+    .map((label, i) => ({ label: label.trim(), hours: (values[i] ?? "").trim() }))
+    .filter((row) => row.label !== "" || row.hours !== "");
 }
