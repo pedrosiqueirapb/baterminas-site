@@ -2,7 +2,7 @@
 
 import { createContext, useActionState, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
-import { CheckCircle2, AlertCircle } from "lucide-react";
+import { CheckCircle2, AlertCircle, Pencil, Trash2 } from "lucide-react";
 import type { ActionResult } from "@/types/content";
 
 const ErrorsCtx = createContext<Record<string, string>>({});
@@ -11,8 +11,17 @@ export const DialogCloseCtx = createContext<(() => void) | null>(null);
 
 type Action = (prev: ActionResult | undefined, fd: FormData) => Promise<ActionResult>;
 
-export function SubmitButton({ children, variant = "primary" }: { children: React.ReactNode; variant?: "primary" | "danger" | "dark" }) {
+const ICON_BUTTON = "inline-flex h-11 w-11 items-center justify-center rounded-lg transition-colors disabled:opacity-60";
+
+export function SubmitButton({ children, variant = "primary", iconOnly = false }: { children: React.ReactNode; variant?: "primary" | "danger" | "dark"; iconOnly?: boolean }) {
   const { pending } = useFormStatus();
+  if (iconOnly) {
+    return (
+      <button type="submit" disabled={pending} aria-label={String(children)} title={String(children)} className={`${ICON_BUTTON} border border-alert/40 bg-white text-alert hover:bg-alert/10`}>
+        <Trash2 aria-hidden="true" className="h-5 w-5" />
+      </button>
+    );
+  }
   const cls = variant === "danger" ? "bg-alert text-white hover:bg-alert/90" : variant === "dark" ? "btn-dark" : "btn-primary";
   return (
     <button type="submit" disabled={pending} className={`btn ${cls} !min-h-11 !py-2 disabled:opacity-60`}>
@@ -32,10 +41,10 @@ export function Feedback({ state }: { state?: ActionResult }) {
 }
 
 export function AdminForm({
-  action, children, submitLabel = "Salvar", className = "space-y-4", resetOnSuccess = false, confirmMessage, variant,
+  action, children, submitLabel = "Salvar", className = "space-y-4", resetOnSuccess = false, confirmMessage, variant, iconOnly = false,
 }: {
   action: Action; children: React.ReactNode;
-  submitLabel?: string; className?: string; resetOnSuccess?: boolean; confirmMessage?: string; variant?: "primary" | "danger" | "dark";
+  submitLabel?: string; className?: string; resetOnSuccess?: boolean; confirmMessage?: string; variant?: "primary" | "danger" | "dark"; iconOnly?: boolean;
 }) {
   const [state, formAction] = useActionState(action, undefined);
   const ref = useRef<HTMLFormElement>(null);
@@ -56,7 +65,7 @@ export function AdminForm({
       <ErrorsCtx.Provider value={errors}>{children}</ErrorsCtx.Provider>
       <Feedback state={state} />
       <div className="flex flex-wrap items-center gap-3">
-        <SubmitButton variant={variant}>{submitLabel}</SubmitButton>
+        <SubmitButton variant={variant} iconOnly={iconOnly}>{submitLabel}</SubmitButton>
         {closeDialog && variant !== "danger" && (
           <button type="button" onClick={closeDialog} className="btn btn-outline-dark !min-h-11 !py-2">Cancelar</button>
         )}
@@ -131,7 +140,9 @@ export function EditDialog({ title, label = "Editar", children }: { title: strin
   }, [open]);
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className="btn btn-outline-dark !min-h-11 !py-2">{label}</button>
+      <button type="button" onClick={() => setOpen(true)} aria-label={`${label}: ${title}`} title={label} className={`${ICON_BUTTON} bg-ink text-white hover:bg-ink-soft`}>
+        <Pencil aria-hidden="true" className="h-5 w-5" />
+      </button>
       <dialog
         ref={ref}
         onClose={close}

@@ -210,6 +210,11 @@ export function Cta({ s }: { s: SiteSettings }) {
   );
 }
 
+function instagramHandle(url: string): string {
+  const user = url.split("?")[0].split("/").filter(Boolean).pop();
+  return user ? `@${user}` : "Instagram";
+}
+
 export function Location({ s }: { s: SiteSettings }) {
   const address = `${s.address_line}${s.address_complement ? `, ${s.address_complement}` : ""} - ${s.neighborhood}, ${s.city} - ${s.state}`;
   return (
@@ -219,9 +224,9 @@ export function Location({ s }: { s: SiteSettings }) {
         <h2 id="t-contato" className="section-title">Visite a loja ou fale com a gente</h2>
         <div className="mt-10 grid gap-5 lg:grid-cols-2">
           <ul className="card divide-y divide-ink/10">
-            <li className="flex gap-4 p-5"><MapPin aria-hidden="true" className="mt-1 h-5 w-5 shrink-0 text-brand-dark" /><div><p className="font-semibold">Endereço</p><address className="not-italic text-muted">{address}</address></div></li>
             <li className="flex gap-4 p-5"><Phone aria-hidden="true" className="mt-1 h-5 w-5 shrink-0 text-brand-dark" /><div><p className="font-semibold">Telefone</p><p className="text-muted">{s.phone}</p></div></li>
             <li className="flex gap-4 p-5"><WhatsappIcon className="mt-1 h-5 w-5 shrink-0 text-brand-dark" /><div><p className="font-semibold">WhatsApp</p><a href={whatsappUrl(s.whatsapp)} {...ext} className="text-muted underline-offset-2 hover:underline">{formatWhatsapp(s.whatsapp)}</a></div></li>
+            <li className="flex gap-4 p-5"><InstagramIcon className="mt-1 h-5 w-5 shrink-0 text-brand-dark" /><div><p className="font-semibold">Instagram</p><a href={s.instagram_url} {...ext} className="text-muted underline-offset-2 hover:underline">{instagramHandle(s.instagram_url)}</a></div></li>
             <li className="flex gap-4 p-5">
               <Clock aria-hidden="true" className="mt-1 h-5 w-5 shrink-0 text-brand-dark" />
               <div>
@@ -242,7 +247,6 @@ export function Location({ s }: { s: SiteSettings }) {
             </div>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <a href={mapsUrl(MAPS_DESTINATION)} {...ext} className="btn btn-primary"><MapPin aria-hidden="true" className="h-5 w-5" /> Abrir no Google Maps</a>
-              <a href={s.instagram_url} {...ext} className="btn btn-outline"><InstagramIcon /> Instagram</a>
             </div>
           </div>
         </div>

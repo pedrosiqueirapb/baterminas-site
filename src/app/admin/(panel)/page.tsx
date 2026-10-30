@@ -15,7 +15,7 @@ export default async function AdminHome() {
   return (
     <>
       <h1 className="section-title">Bem-vindo ao painel</h1>
-      <p className="mt-2 text-muted">As alterações são publicadas no site assim que você salva. Use &ldquo;Ver site&rdquo; para conferir o resultado.</p>
+      <p className="mt-2 text-muted">As alterações são publicadas no site assim que você salva.</p>
       <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((c) => (
           <li key={c.href}>

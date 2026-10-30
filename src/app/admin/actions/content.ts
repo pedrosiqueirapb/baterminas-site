@@ -184,7 +184,7 @@ export async function moveCategory(_: ActionResult | undefined, fd: FormData) { 
 export async function saveCategory(_: ActionResult | undefined, fd: FormData): Promise<ActionResult> {
   const admin = await requireAdmin();
   const id = str(fd, "id");
-  if (!uuidSchema.safeParse(id).success) return { ok: false, message: "Identificador inválido." };
+  if (id && !uuidSchema.safeParse(id).success) return { ok: false, message: "Identificador inválido." };
   const parsed = categorySchema.safeParse({
     title: str(fd, "title"), description: str(fd, "description"), image_alt: str(fd, "image_alt"),
     published: bool(fd, "published"),
@@ -198,6 +198,7 @@ export async function saveCategory(_: ActionResult | undefined, fd: FormData): P
     if ("error" in up) return { ok: false, message: up.error, fieldErrors: { file: up.error } };
     imagePath = up.path;
   }
+  if (!id) return createCategory(admin, parsed.data, imagePath);
   const { data: old } = await admin.supabase.from("battery_categories").select("image_path").eq("id", id).maybeSingle();
   const { error } = await admin.supabase.from("battery_categories").update({ ...parsed.data, ...(imagePath ? { image_path: imagePath } : {}) }).eq("id", id);
   if (error) { await removeImage(admin, imagePath); return dbError(); }
@@ -205,4 +206,34 @@ export async function saveCategory(_: ActionResult | undefined, fd: FormData): P
   await logAdminAction(admin.supabase, admin.user.id, "update", "battery_categories", id);
   publish();
   return { ok: true, message: "Categoria atualizada." };
+}
+
+/** O identificador na URL é gerado a partir do título, com sufixo aleatório para ser único. */
+function categorySlug(title: string): string {
+  const base = title.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 30) || "categoria";
+  return `${base}-${randomUUID().slice(0, 6)}`;
+}
+
+async function createCategory(admin: Admin, data: Record<string, unknown>, imagePath: string | undefined): Promise<ActionResult> {
+  const { data: last } = await admin.supabase.from("battery_categories").select("sort_order").order("sort_order", { ascending: false }).limit(1).maybeSingle();
+  const sortOrder = (last?.sort_order ?? -1) + 1;
+  const { data: row, error } = await admin.supabase.from("battery_categories")
+    .insert({ ...data, slug: categorySlug(String(data.title)), sort_order: sortOrder, image_path: imagePath ?? "" }).select("id").single();
+  if (error) { await removeImage(admin, imagePath); return dbError(); }
+  await logAdminAction(admin.supabase, admin.user.id, "create", "battery_categories", row.id);
+  publish();
+  return { ok: true, message: "Categoria criada." };
+}
+
+export async function deleteCategory(_: ActionResult | undefined, fd: FormData): Promise<ActionResult> {
+  const admin = await requireAdmin();
+  const id = str(fd, "id");
+  if (!uuidSchema.safeParse(id).success) return { ok: false, message: "Identificador inválido." };
+  const { data: old } = await admin.supabase.from("battery_categories").select("image_path").eq("id", id).maybeSingle();
+  const { error } = await admin.supabase.from("battery_categories").delete().eq("id", id);
+  if (error) return dbError();
+  await removeImage(admin, old?.image_path);
+  await logAdminAction(admin.supabase, admin.user.id, "delete", "battery_categories", id);
+  publish();
+  return { ok: true, message: "Categoria excluída." };
 }

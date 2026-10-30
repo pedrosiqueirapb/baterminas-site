@@ -46,7 +46,7 @@ export default async function BrandsPage() {
                 <EditDialog title={`Editar marca ${b.name}`}>
                   <AdminForm action={saveBrand} className="space-y-4"><BrandFields b={b} /></AdminForm>
                 </EditDialog>
-                <AdminForm action={deleteBrand} className="flex items-center gap-2" variant="danger" submitLabel="Excluir" confirmMessage={`Excluir a marca ${b.name}? Esta ação não pode ser desfeita.`}>
+                <AdminForm action={deleteBrand} className="flex items-center gap-2" variant="danger" submitLabel="Excluir" iconOnly confirmMessage={`Excluir a marca ${b.name}? Esta ação não pode ser desfeita.`}>
                   <input type="hidden" name="id" value={b.id} />
                 </AdminForm>
                 <MoveButtons action={moveBrand} id={b.id} name={b.name} />
