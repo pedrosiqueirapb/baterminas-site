@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Footer, FloatingWhatsapp } from "@/components/public/footer";
 import { Header } from "@/components/public/header";
-import { About, Brands, Categories, Cta, Features, Hero, Location, Reviews } from "@/components/public/sections";
+import { About, Brands, Categories, Cta, Features, Hero, Location, Reviews, hasReviewsContent } from "@/components/public/sections";
 import { getGoogleReviews } from "@/lib/google-places";
 import { jsonLd } from "@/lib/seo";
 import { getContentSafe } from "@/services/content";
@@ -27,7 +27,7 @@ export default async function HomePage() {
       <a href="#conteudo" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-brand focus:px-4 focus:py-2 focus:text-ink">
         Ir para o conteúdo
       </a>
-      <Header settings={settings} />
+      <Header settings={settings} showReviewsLink={hasReviewsContent(settings, google, testimonials)} />
       <main id="conteudo">
         <Hero s={settings} />
         <Features />
@@ -38,7 +38,7 @@ export default async function HomePage() {
         <Cta s={settings} />
         <Location s={settings} />
       </main>
-      <Footer s={settings} />
+      <Footer s={settings} showReviewsLink={hasReviewsContent(settings, google, testimonials)} />
       <FloatingWhatsapp s={settings} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(settings) }} />
     </>

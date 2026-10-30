@@ -5,19 +5,19 @@ import { WhatsappIcon } from "@/components/ui/brand-icons";
 import { WA_MESSAGES, whatsappUrl } from "@/lib/whatsapp";
 import type { SiteSettings } from "@/types/content";
 
-export function Header({ settings }: { settings: SiteSettings }) {
+export function Header({ settings, showReviewsLink }: { settings: SiteSettings; showReviewsLink?: boolean }) {
   const items: NavItem[] = [
     { href: "/#baterias", label: "Baterias" },
     { href: "/#marcas", label: "Marcas" },
-    ...(settings.show_reviews ? [{ href: "/#avaliacoes", label: "Avaliações" }] : []),
+    ...(settings.show_reviews && showReviewsLink !== false ? [{ href: "/#avaliacoes", label: "Avaliações" }] : []),
     { href: "/#contato", label: "Localização e contato" },
   ];
   const wa = whatsappUrl(settings.whatsapp, WA_MESSAGES.general);
   return (
     <header className="on-dark sticky top-0 z-40 border-b border-white/10 bg-ink text-white">
-      <div className="container-page relative flex h-16 items-center justify-between sm:h-20">
+      <div className="container-page relative flex h-[4.5rem] items-center justify-between sm:h-24">
         <Link href="/" aria-label="Baterminas, página inicial" className="flex items-center">
-          <Logo path={settings.logo_path} size={48} />
+          <Logo path={settings.logo_path} size={60} />
         </Link>
         <nav aria-label="Menu principal" className="hidden items-center gap-8 lg:flex">
           {items.map((i) => (

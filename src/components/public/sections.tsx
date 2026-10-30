@@ -76,9 +76,9 @@ export function Categories({ items, s }: { items: Category[]; s: SiteSettings })
       <div className="container-page">
         <span className="eyebrow">Aplicações</span>
         <h2 id="t-baterias" className="section-title max-w-2xl">Baterias para o seu veículo e para outras aplicações</h2>
-        <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((c) => (
-            <li key={c.id} className="card flex flex-col overflow-hidden">
+        <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-6">
+          {items.map((c, i) => (
+            <li key={c.id} className={`card flex flex-col overflow-hidden lg:col-span-2 ${items.length % 3 === 2 && i === items.length - 2 ? "lg:col-start-2" : ""}`}>
               <Image
                 src={publicImageUrl(c.image_path) ?? CATEGORY_DEFAULTS[c.slug] ?? "/images/bateria-conceitual.webp"}
                 alt={c.image_alt || c.title}
@@ -182,9 +182,19 @@ function Stars({ value }: { value: number }) {
   );
 }
 
+export function reviewsProfileUrl(s: SiteSettings, google: GoogleReviews | null): string {
+  const placeId = process.env.GOOGLE_PLACE_ID;
+  const fallback = placeId && /^[A-Za-z0-9_-]+$/.test(placeId) ? `https://www.google.com/maps/search/?api=1&query=Baterminas&query_place_id=${placeId}` : "";
+  return s.google_profile_url || google?.mapsUri || fallback;
+}
+
+export function hasReviewsContent(s: SiteSettings, google: GoogleReviews | null, testimonials: Testimonial[]): boolean {
+  return s.show_reviews && (!!reviewsProfileUrl(s, google) || !!google || testimonials.length > 0);
+}
+
 export function Reviews({ s, google, testimonials }: { s: SiteSettings; google: GoogleReviews | null; testimonials: Testimonial[] }) {
-  if (!s.show_reviews) return null;
-  const profile = s.google_profile_url || google?.mapsUri || "";
+  if (!hasReviewsContent(s, google, testimonials)) return null;
+  const profile = reviewsProfileUrl(s, google);
   return (
     <section id="avaliacoes" aria-labelledby="t-aval" className="bg-white py-16 sm:py-24">
       <div className="container-page">
@@ -232,9 +242,6 @@ export function Reviews({ s, google, testimonials }: { s: SiteSettings; google: 
           <a href={profile} {...ext} className="btn btn-outline-dark mt-8">
             <Star aria-hidden="true" className="h-5 w-5" /> Ver avaliações no Google
           </a>
-        )}
-        {!profile && !google && testimonials.length === 0 && (
-          <p className="mt-6 text-muted">As avaliações serão exibidas aqui em breve.</p>
         )}
       </div>
     </section>
