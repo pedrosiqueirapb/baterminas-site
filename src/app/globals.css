@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-brand: #fbb040;
+  --color-brand-dark: #e89a1f;
+  --color-ink: #171a21;
+  --color-ink-soft: #2a2f3a;
+  --color-paper: #f7f7f7;
+  --color-alert: #ae0f18;
+  --color-muted: #5b6270;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-outfit), var(--font-inter), system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-brand);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.on-dark :focus-visible {
+  outline-color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@layer components {
+  .container-page { @apply mx-auto w-full max-w-6xl px-5 sm:px-8; }
+  .btn {
+    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-xl px-6 py-3 text-base font-semibold transition-colors duration-200;
+  }
+  .btn-primary { @apply bg-brand text-ink hover:bg-brand-dark; }
+  .btn-dark { @apply bg-ink text-white hover:bg-ink-soft; }
+  .btn-outline { @apply border border-white/40 text-white hover:bg-white/10; }
+  .btn-outline-dark { @apply border border-ink/20 text-ink hover:bg-ink/5; }
+  .card { @apply rounded-2xl border border-ink/10 bg-white shadow-sm; }
+  .eyebrow { @apply mb-3 inline-block text-sm font-semibold text-alert; }
+  .section-title { @apply font-display text-3xl font-bold tracking-tight sm:text-4xl; }
+  .field { @apply w-full rounded-lg border border-ink/20 bg-white px-3 py-2.5 text-base text-ink; }
+  .label { @apply mb-1 block text-sm font-medium; }
+}
