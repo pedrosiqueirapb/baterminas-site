@@ -14,8 +14,8 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { absolute: s.seo_title },
     description: s.seo_description,
     alternates: { canonical: "/" },
-    openGraph: { title: s.seo_title, description: s.seo_description, url: "/", images: [{ url: "/images/hero-carro-estrada.webp", width: 1600, height: 1600, alt: s.hero_image_alt }] },
-    twitter: { title: s.seo_title, description: s.seo_description, images: ["/images/hero-carro-estrada.webp"] },
+    openGraph: { title: s.seo_title, description: s.seo_description, url: "/", images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Logo da Baterminas" }] },
+    twitter: { title: s.seo_title, description: s.seo_description, images: ["/og-image.png"] },
   };
 }
 
