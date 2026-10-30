@@ -116,7 +116,7 @@ export async function saveBrand(_: ActionResult | undefined, fd: FormData): Prom
   const idRaw = str(fd, "id");
   const parsed = brandSchema.safeParse({
     name: str(fd, "name"), description: str(fd, "description"), image_alt: str(fd, "image_alt"),
-    sort_order: str(fd, "sort_order") || "0", active: bool(fd, "active"),
+    active: bool(fd, "active"),
   });
   if (!parsed.success) return fail(parsed.error);
 
@@ -136,7 +136,9 @@ export async function saveBrand(_: ActionResult | undefined, fd: FormData): Prom
     if (imagePath) await removeImage(admin, old?.image_path);
     await logAdminAction(admin.supabase, admin.user.id, "update", "battery_brands", idRaw);
   } else {
-    const { data, error } = await admin.supabase.from("battery_brands").insert({ ...parsed.data, image_path: imagePath ?? "" }).select("id").single();
+    const { data: last } = await admin.supabase.from("battery_brands").select("sort_order").order("sort_order", { ascending: false }).limit(1).maybeSingle();
+    const sortOrder = (last?.sort_order ?? -1) + 1;
+    const { data, error } = await admin.supabase.from("battery_brands").insert({ ...parsed.data, sort_order: sortOrder, image_path: imagePath ?? "" }).select("id").single();
     if (error) { await removeImage(admin, imagePath); return dbError(); }
     await logAdminAction(admin.supabase, admin.user.id, "create", "battery_brands", data.id);
   }
@@ -185,7 +187,7 @@ export async function saveCategory(_: ActionResult | undefined, fd: FormData): P
   if (!uuidSchema.safeParse(id).success) return { ok: false, message: "Identificador inválido." };
   const parsed = categorySchema.safeParse({
     title: str(fd, "title"), description: str(fd, "description"), image_alt: str(fd, "image_alt"),
-    sort_order: str(fd, "sort_order") || "0", published: bool(fd, "published"),
+    published: bool(fd, "published"),
   });
   if (!parsed.success) return fail(parsed.error);
 

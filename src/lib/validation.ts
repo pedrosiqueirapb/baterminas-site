@@ -65,7 +65,6 @@ export const brandSchema = z.object({
   name: plain(60, 1),
   description: text(300),
   image_alt: text(200),
-  sort_order: z.coerce.number().int().min(0).max(9999),
   active: z.boolean(),
 });
 
@@ -73,7 +72,6 @@ export const categorySchema = z.object({
   title: text(80, 1),
   description: text(300),
   image_alt: text(200),
-  sort_order: z.coerce.number().int().min(0).max(9999),
   published: z.boolean(),
 });
 

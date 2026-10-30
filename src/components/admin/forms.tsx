@@ -1,11 +1,13 @@
 "use client";
 
-import { createContext, useActionState, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useActionState, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { CheckCircle2, AlertCircle } from "lucide-react";
 import type { ActionResult } from "@/types/content";
 
 const ErrorsCtx = createContext<Record<string, string>>({});
+/** Fornecido pelo EditDialog: permite fechar o formulário após salvar ou cancelar. */
+export const DialogCloseCtx = createContext<(() => void) | null>(null);
 
 type Action = (prev: ActionResult | undefined, fd: FormData) => Promise<ActionResult>;
 
@@ -37,9 +39,12 @@ export function AdminForm({
 }) {
   const [state, formAction] = useActionState(action, undefined);
   const ref = useRef<HTMLFormElement>(null);
+  const closeDialog = useContext(DialogCloseCtx);
   useEffect(() => {
-    if (state?.ok && resetOnSuccess) ref.current?.reset();
-  }, [state, resetOnSuccess]);
+    if (!state?.ok) return;
+    if (resetOnSuccess) ref.current?.reset();
+    closeDialog?.();
+  }, [state, resetOnSuccess, closeDialog]);
   const errors = state && !state.ok ? state.fieldErrors ?? {} : {};
   return (
     <form
@@ -50,7 +55,12 @@ export function AdminForm({
     >
       <ErrorsCtx.Provider value={errors}>{children}</ErrorsCtx.Provider>
       <Feedback state={state} />
-      <SubmitButton variant={variant}>{submitLabel}</SubmitButton>
+      <div className="flex flex-wrap items-center gap-3">
+        <SubmitButton variant={variant}>{submitLabel}</SubmitButton>
+        {closeDialog && variant !== "danger" && (
+          <button type="button" onClick={closeDialog} className="btn btn-outline-dark !min-h-11 !py-2">Cancelar</button>
+        )}
+      </div>
     </form>
   );
 }
@@ -105,5 +115,36 @@ export function MoveButtons({ action, id, name }: { action: Action; id: string; 
       ))}
       {state && !state.ok && <span role="alert" className="sr-only">{state.message}</span>}
     </form>
+  );
+}
+
+/** Botão que abre um formulário em janela (modal). Cancelar ou salvar fecha e descarta/aplica as alterações. */
+export function EditDialog({ title, label = "Editar", children }: { title: string; label?: string; children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDialogElement>(null);
+  const close = useCallback(() => setOpen(false), []);
+  useEffect(() => {
+    const dialog = ref.current;
+    if (!dialog) return;
+    if (open && !dialog.open) dialog.showModal();
+    if (!open && dialog.open) dialog.close();
+  }, [open]);
+  return (
+    <>
+      <button type="button" onClick={() => setOpen(true)} className="btn btn-outline-dark !min-h-11 !py-2">{label}</button>
+      <dialog
+        ref={ref}
+        onClose={close}
+        aria-labelledby="dialog-title"
+        className="m-auto w-[min(42rem,calc(100%-2rem))] rounded-2xl bg-white p-0 shadow-2xl backdrop:bg-ink/60"
+      >
+        {open && (
+          <div className="max-h-[85vh] overflow-y-auto p-6">
+            <h2 id="dialog-title" className="mb-5 font-display text-xl font-semibold">{title}</h2>
+            <DialogCloseCtx.Provider value={close}>{children}</DialogCloseCtx.Provider>
+          </div>
+        )}
+      </dialog>
+    </>
   );
 }

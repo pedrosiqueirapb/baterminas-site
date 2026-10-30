@@ -20,10 +20,10 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   return (
     <div className="min-h-screen bg-paper">
       <header className="on-dark bg-ink text-white">
-        <div className="container-page flex h-16 items-center justify-between gap-4">
+        <div className="container-page flex h-20 items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <Logo size={40} />
-            <span className="hidden font-display font-semibold sm:block">Painel administrativo</span>
+            <Logo size={56} />
+            <span className="hidden font-display font-semibold sm:block">Painel de administrador</span>
           </div>
           <div className="flex items-center gap-2">
             <a href="/" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-1.5 rounded-lg px-3 text-sm hover:bg-white/10">

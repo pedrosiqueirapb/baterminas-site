@@ -4,7 +4,6 @@ import { AdminForm, Field } from "@/components/admin/forms";
 import { requireAdmin } from "@/lib/auth";
 import { FALLBACK_SETTINGS } from "@/lib/constants";
 import { hoursToText } from "@/lib/hours";
-import { CAPITALIZATION_MESSAGE } from "@/lib/text";
 import type { SiteSettings } from "@/types/content";
 
 export const metadata: Metadata = { title: "Configurações" };
@@ -17,7 +16,6 @@ export default async function SettingsPage() {
   return (
     <>
       <h1 className="section-title">Configurações</h1>
-      <p className="mt-2 max-w-2xl text-muted">{CAPITALIZATION_MESSAGE} O crédito &ldquo;Desenvolvido por Autojade&rdquo; é fixo e não pode ser alterado.</p>
       <AdminForm action={saveSettings} submitLabel="Salvar e publicar" className="mt-8 space-y-8">
         <>
             <fieldset className="card grid gap-4 p-6 sm:grid-cols-2">
