@@ -63,7 +63,7 @@ export const FALLBACK_CATEGORIES: Category[] = [
   description: c.description,
   image_path: "",
   image_alt: c.title,
-  whatsapp_message: `Olá! Gostaria de consultar uma bateria para ${c.wa === "carro" ? "meu carro" : c.wa === "moto" ? "minha moto" : c.wa}.`,
+  whatsapp_message: "",
   sort_order: i,
   published: true,
 }));

@@ -25,11 +25,10 @@ describe("regra de capitalização", () => {
 });
 
 describe("whatsapp e links", () => {
-  it("gera link oficial com mensagem codificada", () => {
+  it("gera link direto, sem mensagem pré-preenchida", () => {
     expect(whatsappUrl("5534999954450")).toBe("https://wa.me/5534999954450");
-    expect(whatsappUrl("5534999954450", "Olá! Gostaria de consultar uma bateria para meu carro.")).toBe(
-      "https://wa.me/5534999954450?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20uma%20bateria%20para%20meu%20carro.",
-    );
+    expect(whatsappUrl("(34) 99995-4450")).toBe("https://wa.me/5534999954450");
+    expect(whatsappUrl("5534999954450")).not.toContain("text=");
   });
   it("normaliza números", () => {
     expect(normalizeWhatsapp("(34) 99995-4450")).toBe("5534999954450");

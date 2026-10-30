@@ -4,8 +4,10 @@
 // Uso:
 //   node --env-file=.env.local scripts/create-admin.mjs criar admin@exemplo.com
 //   node --env-file=.env.local scripts/create-admin.mjs resetar-mfa admin@exemplo.com
+//   node --env-file=.env.local scripts/create-admin.mjs redefinir-senha admin@exemplo.com
 //
 // A senha é lida de forma interativa (não aparece em histórico nem em argumentos).
+// Para uso automatizado, ADMIN_PASSWORD pode ser definida no ambiente do comando.
 import { createClient } from "@supabase/supabase-js";
 import { createInterface } from "node:readline";
 
@@ -44,7 +46,7 @@ async function findUser() {
 if (command === "criar") {
   let user = await findUser();
   if (!user) {
-    const pw = await askHidden("Senha (mínimo 12 caracteres, com maiúscula, minúscula, número e símbolo): ");
+    const pw = process.env.ADMIN_PASSWORD ?? (await askHidden("Senha (mínimo 12 caracteres, com maiúscula, minúscula, número e símbolo): "));
     if (!strongPassword(pw)) { console.error("Senha fraca. Operação cancelada."); process.exit(1); }
     const { data, error } = await supabase.auth.admin.createUser({ email, password: pw, email_confirm: true });
     if (error) { console.error("Falha ao criar usuário:", error.message); process.exit(1); }
@@ -53,6 +55,14 @@ if (command === "criar") {
   const { error } = await supabase.from("admin_users").upsert({ user_id: user.id });
   if (error) { console.error("Falha ao autorizar:", error.message); process.exit(1); }
   console.log(`Administrador autorizado: ${email}. No primeiro acesso, configure o segundo fator em /admin/mfa.`);
+} else if (command === "redefinir-senha") {
+  const user = await findUser();
+  if (!user) { console.error("Usuário não encontrado."); process.exit(1); }
+  const pw = process.env.ADMIN_PASSWORD ?? (await askHidden("Nova senha (mínimo 12 caracteres, com maiúscula, minúscula, número e símbolo): "));
+  if (!strongPassword(pw)) { console.error("Senha fraca. Operação cancelada."); process.exit(1); }
+  const { error } = await supabase.auth.admin.updateUserById(user.id, { password: pw });
+  if (error) { console.error("Falha ao redefinir:", error.message); process.exit(1); }
+  console.log("Senha redefinida.");
 } else if (command === "resetar-mfa") {
   const user = await findUser();
   if (!user) { console.error("Usuário não encontrado."); process.exit(1); }

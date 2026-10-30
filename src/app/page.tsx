@@ -24,9 +24,6 @@ export default async function HomePage() {
   const google = settings.show_reviews ? await getGoogleReviews() : null;
   return (
     <>
-      <a href="#conteudo" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-brand focus:px-4 focus:py-2 focus:text-ink">
-        Ir para o conteúdo
-      </a>
       <Header settings={settings} showReviewsLink={hasReviewsContent(settings, google, testimonials)} />
       <main id="conteudo">
         <Hero s={settings} />

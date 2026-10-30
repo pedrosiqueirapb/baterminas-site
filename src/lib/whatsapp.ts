@@ -1,20 +1,13 @@
 export const DEFAULT_WHATSAPP = "5534999954450";
 
-export const WA_MESSAGES = {
-  general: "Olá! Gostaria de saber quais baterias estão disponíveis.",
-  info: "Olá! Gostaria de mais informações sobre a Baterminas.",
-  car: "Olá! Gostaria de consultar uma bateria para meu carro.",
-  motorcycle: "Olá! Gostaria de consultar uma bateria para minha moto.",
-} as const;
-
 export function normalizeWhatsapp(value: string): string {
   const digits = value.replace(/\D/g, "");
   return digits.length <= 11 ? `55${digits}` : digits;
 }
 
-export function whatsappUrl(number: string, message?: string): string {
-  const base = `https://wa.me/${normalizeWhatsapp(number) || DEFAULT_WHATSAPP}`;
-  return message ? `${base}?text=${encodeURIComponent(message)}` : base;
+/** Link direto para a conversa, sem mensagem pré-preenchida. */
+export function whatsappUrl(number: string): string {
+  return `https://wa.me/${normalizeWhatsapp(number) || DEFAULT_WHATSAPP}`;
 }
 
 export function formatWhatsapp(number: string): string {

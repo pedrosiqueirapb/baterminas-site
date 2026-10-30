@@ -6,7 +6,7 @@ import { z } from "zod";
 import { rateLimit } from "@/lib/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 
-const loginSchema = z.object({ email: z.string().trim().email().max(200), password: z.string().min(1).max(200) });
+const loginSchema = z.object({ password: z.string().min(1).max(200) });
 const codeSchema = z.object({ factorId: z.string().uuid(), code: z.string().trim().regex(/^\d{6}$/, "Informe o código de 6 dígitos.") });
 
 async function clientIp() {
@@ -20,12 +20,16 @@ export async function signIn(_: AuthState, formData: FormData): Promise<AuthStat
   const ip = await clientIp();
   if (!rateLimit(`login:${ip}`, 8, 15 * 60_000)) return { error: "Muitas tentativas. Aguarde alguns minutos e tente novamente." };
 
-  const parsed = loginSchema.safeParse({ email: formData.get("email"), password: formData.get("password") });
-  if (!parsed.success) return { error: "Informe um e-mail e uma senha válidos." };
+  const parsed = loginSchema.safeParse({ password: formData.get("password") });
+  if (!parsed.success) return { error: "Informe a senha." };
+
+  // A conta administrativa é definida no servidor (ADMIN_EMAIL); o e-mail nunca é digitado nem exposto ao navegador.
+  const email = process.env.ADMIN_EMAIL?.trim();
+  if (!email) return { error: "O acesso ao painel ainda não foi configurado." };
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword(parsed.data);
-  if (error) return { error: "E-mail ou senha incorretos." };
+  const { error } = await supabase.auth.signInWithPassword({ email, password: parsed.data.password });
+  if (error) return { error: "Senha incorreta." };
   redirect("/admin/mfa");
 }
 

@@ -1,7 +1,7 @@
 import { Logo } from "@/components/public/logo";
 import { InstagramIcon, WhatsappIcon } from "@/components/ui/brand-icons";
 import { AUTOJADE_URL } from "@/lib/constants";
-import { WA_MESSAGES, telUrl, whatsappUrl } from "@/lib/whatsapp";
+import { whatsappUrl } from "@/lib/whatsapp";
 import type { SiteSettings } from "@/types/content";
 
 const ext = { target: "_blank", rel: "noopener noreferrer" } as const;
@@ -25,11 +25,18 @@ export function Footer({ s, showReviewsLink }: { s: SiteSettings; showReviewsLin
           </ul>
         </nav>
         <div>
-          <h2 className="mb-3 font-display text-base font-semibold text-white">Contato</h2>
-          <ul className="space-y-3 text-[0.95rem]">
-            <li><a href={telUrl(s.phone)} className="hover:text-brand">{s.phone}</a></li>
-            <li><a href={whatsappUrl(s.whatsapp, WA_MESSAGES.info)} {...ext} className="inline-flex items-center gap-2 hover:text-brand"><WhatsappIcon /> WhatsApp</a></li>
-            <li><a href={s.instagram_url} {...ext} className="inline-flex items-center gap-2 hover:text-brand"><InstagramIcon /> Instagram</a></li>
+          <h2 className="mb-3 font-display text-base font-semibold text-white">Redes e contato</h2>
+          <ul className="flex items-center gap-3">
+            <li>
+              <a href={whatsappUrl(s.whatsapp)} {...ext} aria-label="Conversar pelo WhatsApp" className="flex h-14 w-14 items-center justify-center rounded-full border border-white/20 text-white transition-colors hover:border-brand hover:bg-brand hover:text-ink">
+                <WhatsappIcon className="h-8 w-8" />
+              </a>
+            </li>
+            <li>
+              <a href={s.instagram_url} {...ext} aria-label="Visitar o Instagram da Baterminas" className="flex h-14 w-14 items-center justify-center rounded-full border border-white/20 text-white transition-colors hover:border-brand hover:bg-brand hover:text-ink">
+                <InstagramIcon className="h-8 w-8" />
+              </a>
+            </li>
           </ul>
         </div>
       </div>
@@ -47,7 +54,7 @@ export function Footer({ s, showReviewsLink }: { s: SiteSettings; showReviewsLin
 export function FloatingWhatsapp({ s }: { s: SiteSettings }) {
   return (
     <a
-      href={whatsappUrl(s.whatsapp, WA_MESSAGES.general)}
+      href={whatsappUrl(s.whatsapp)}
       {...ext}
       aria-label="Fale pelo WhatsApp"
       className="fixed bottom-4 right-4 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-[#1fa855] text-white shadow-lg ring-2 ring-white hover:bg-[#188a46] lg:hidden"

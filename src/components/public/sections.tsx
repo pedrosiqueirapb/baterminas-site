@@ -1,9 +1,10 @@
 import Image from "next/image";
+import { Carousel } from "@/components/public/carousel";
 import { BadgeCheck, Banknote, Clock, MapPin, Phone, Star, Truck, Zap } from "lucide-react";
 import { InstagramIcon, WhatsappIcon } from "@/components/ui/brand-icons";
 import { MAPS_DESTINATION } from "@/lib/constants";
 import type { GoogleReviews } from "@/lib/google-places";
-import { WA_MESSAGES, formatWhatsapp, mapsUrl, telUrl, whatsappUrl } from "@/lib/whatsapp";
+import { formatWhatsapp, mapsUrl, telUrl, whatsappUrl } from "@/lib/whatsapp";
 import { publicImageUrl } from "@/services/content";
 import type { Brand, Category, SiteSettings, Testimonial } from "@/types/content";
 
@@ -30,7 +31,7 @@ export function Hero({ s }: { s: SiteSettings }) {
         <h1 className="max-w-2xl font-display text-4xl font-bold leading-[1.1] tracking-tight sm:text-6xl">{s.hero_title}</h1>
         <p className="mt-5 max-w-xl text-lg text-white/80 sm:text-xl">{s.hero_description}</p>
         <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-          <a href={whatsappUrl(s.whatsapp, WA_MESSAGES.general)} {...ext} className="btn btn-primary">
+          <a href={whatsappUrl(s.whatsapp)} {...ext} className="btn btn-primary">
             <WhatsappIcon /> Fale pelo WhatsApp
           </a>
           <a href={mapsUrl(MAPS_DESTINATION)} {...ext} className="btn btn-outline">
@@ -91,7 +92,7 @@ export function Categories({ items, s }: { items: Category[]; s: SiteSettings })
               <div className="flex flex-1 flex-col p-6">
                 <h3 className="font-display text-xl font-semibold">{c.title}</h3>
                 <p className="mt-2 flex-1 text-[0.95rem] text-muted">{c.description}</p>
-                <a href={whatsappUrl(s.whatsapp, c.whatsapp_message || WA_MESSAGES.general)} {...ext} className="btn btn-dark mt-5 w-full">
+                <a href={whatsappUrl(s.whatsapp)} {...ext} className="btn btn-dark mt-5 w-full">
                   <WhatsappIcon /> Consultar disponibilidade
                 </a>
               </div>
@@ -110,33 +111,35 @@ export function Brands({ items, s }: { items: Brand[]; s: SiteSettings }) {
       <div className="container-page">
         <span className="mb-3 inline-block text-sm font-semibold text-brand">Marcas</span>
         <h2 id="t-marcas" className="section-title max-w-2xl">Baterias {items.map((b) => b.name).slice(0, -1).join(", ")}{items.length > 1 ? " e " : ""}{items[items.length - 1].name}</h2>
-        <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {items.map((b) => (
-            <li key={b.id} className="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-ink-soft">
-              <Image
-                src={publicImageUrl(b.image_path) ?? "/images/bateria-conceitual.webp"}
-                alt={b.image_alt || `Bateria da marca ${b.name}`}
-                width={800}
-                height={600}
-                sizes="(min-width:1024px) 280px, (min-width:640px) 50vw, 100vw"
-                loading="lazy"
-                className="aspect-[4/3] w-full object-cover"
-              />
-              <div className="flex flex-1 flex-col p-5">
-                <h3 className="font-display text-xl font-semibold text-brand">{b.name}</h3>
-                <p className="mt-2 flex-1 text-[0.95rem] text-white/75">{b.description}</p>
-                <a
-                  href={whatsappUrl(s.whatsapp, `Olá! Gostaria de consultar baterias ${b.name}.`)}
-                  {...ext}
-                  aria-label={`Consultar baterias ${b.name} pelo WhatsApp`}
-                  className="btn btn-primary mt-4 w-full"
-                >
-                  <WhatsappIcon /> Consultar
-                </a>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <div className="mt-10">
+          <Carousel label="Marcas de baterias" dark>
+            {items.map((b) => (
+              <li key={b.id} className="flex w-[78%] shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-white/10 bg-ink-soft sm:w-[calc(50%-10px)] lg:w-[calc(25%-15px)]">
+                <Image
+                  src={publicImageUrl(b.image_path) ?? "/images/bateria-conceitual.webp"}
+                  alt={b.image_alt || `Bateria da marca ${b.name}`}
+                  width={800}
+                  height={600}
+                  sizes="(min-width:1024px) 280px, (min-width:640px) 50vw, 78vw"
+                  loading="lazy"
+                  className="aspect-[4/3] w-full object-cover"
+                />
+                <div className="flex flex-1 flex-col p-5">
+                  <h3 className="font-display text-xl font-semibold text-brand">{b.name}</h3>
+                  <p className="mt-2 flex-1 text-[0.95rem] text-white/75">{b.description}</p>
+                  <a
+                    href={whatsappUrl(s.whatsapp)}
+                    {...ext}
+                    aria-label={`Consultar baterias ${b.name} pelo WhatsApp`}
+                    className="btn btn-primary mt-4 w-full"
+                  >
+                    <WhatsappIcon /> Consultar
+                  </a>
+                </div>
+              </li>
+            ))}
+          </Carousel>
+        </div>
         <p className="mt-6 text-sm text-white/60">Imagens ilustrativas, sem representar produtos ou embalagens específicas.</p>
       </div>
     </section>
@@ -189,8 +192,10 @@ export function reviewsProfileUrl(s: SiteSettings, google: GoogleReviews | null)
 }
 
 export function hasReviewsContent(s: SiteSettings, google: GoogleReviews | null, testimonials: Testimonial[]): boolean {
-  return s.show_reviews && (!!reviewsProfileUrl(s, google) || !!google || testimonials.length > 0);
+  return s.show_reviews && ((google?.reviews.length ?? 0) > 0 || testimonials.length > 0);
 }
+
+const REVIEW_CARD = "card flex w-[85%] shrink-0 snap-start flex-col p-6 sm:w-[calc(50%-10px)] lg:w-[calc(33.333%-14px)]";
 
 export function Reviews({ s, google, testimonials }: { s: SiteSettings; google: GoogleReviews | null; testimonials: Testimonial[] }) {
   if (!hasReviewsContent(s, google, testimonials)) return null;
@@ -209,38 +214,30 @@ export function Reviews({ s, google, testimonials }: { s: SiteSettings; google: 
           </div>
         )}
 
-        {google && google.reviews.length > 0 && (
-          <ul className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {google.reviews.map((r, i) => (
-              <li key={i} className="card p-6">
+        <div className="mt-8">
+          <Carousel label="Avaliações de clientes">
+            {(google?.reviews ?? []).map((r, i) => (
+              <li key={`g-${i}`} className={REVIEW_CARD}>
                 <Stars value={r.rating} />
-                <blockquote className="mt-3 text-[0.95rem]">{r.text}</blockquote>
+                <blockquote className="mt-3 flex-1 text-[0.95rem]">{r.text}</blockquote>
                 <p className="mt-4 text-sm font-semibold">{r.author}</p>
-                {r.when && <p className="text-sm text-muted">{r.when}</p>}
+                <p className="text-sm text-muted">Avaliação no Google{r.when ? `, ${r.when}` : ""}</p>
               </li>
             ))}
-          </ul>
-        )}
+            {testimonials.map((t) => (
+              <li key={t.id} className={REVIEW_CARD}>
+                <blockquote className="flex-1 text-[0.95rem]">{t.body}</blockquote>
+                <p className="mt-4 text-sm font-semibold">{t.display_name}</p>
+                <p className="text-sm text-muted">Depoimento de cliente da loja</p>
+              </li>
+            ))}
+          </Carousel>
+        </div>
+
         {google && <p className="mt-4 text-xs text-muted">Avaliações do Google. Fonte: Google Maps.</p>}
-
-        {testimonials.length > 0 && (
-          <div className="mt-10">
-            <h3 className="font-display text-xl font-semibold">Depoimentos de clientes da loja</h3>
-            <ul className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {testimonials.map((t) => (
-                <li key={t.id} className="card p-6">
-                  <blockquote className="text-[0.95rem]">{t.body}</blockquote>
-                  <p className="mt-4 text-sm font-semibold">{t.display_name}</p>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-3 text-xs text-muted">Depoimentos autorizados, cadastrados pela loja.</p>
-          </div>
-        )}
-
         {profile && (
-          <a href={profile} {...ext} className="btn btn-outline-dark mt-8">
-            <Star aria-hidden="true" className="h-5 w-5" /> Ver avaliações no Google
+          <a href={profile} {...ext} className="mt-4 inline-block text-sm font-semibold underline underline-offset-4 hover:text-brand-dark">
+            Ver todas as avaliações no Google
           </a>
         )}
       </div>
@@ -256,7 +253,7 @@ export function Cta({ s }: { s: SiteSettings }) {
           <h2 id="t-cta" className="section-title">{s.cta_title}</h2>
           <p className="mt-3 max-w-xl text-lg text-ink/80">{s.cta_description}</p>
         </div>
-        <a href={whatsappUrl(s.whatsapp, WA_MESSAGES.general)} {...ext} className="btn btn-dark !min-h-14 w-full !px-8 text-lg lg:w-auto">
+        <a href={whatsappUrl(s.whatsapp)} {...ext} className="btn btn-dark !min-h-14 w-full !px-8 text-lg lg:w-auto">
           <WhatsappIcon className="h-6 w-6" /> Consultar pelo WhatsApp
         </a>
       </div>
@@ -275,7 +272,7 @@ export function Location({ s }: { s: SiteSettings }) {
           <ul className="card divide-y divide-ink/10">
             <li className="flex gap-4 p-5"><MapPin aria-hidden="true" className="mt-1 h-5 w-5 shrink-0 text-brand-dark" /><div><p className="font-semibold">Endereço</p><address className="not-italic text-muted">{address}</address></div></li>
             <li className="flex gap-4 p-5"><Phone aria-hidden="true" className="mt-1 h-5 w-5 shrink-0 text-brand-dark" /><div><p className="font-semibold">Telefone</p><a href={telUrl(s.phone)} className="text-muted underline-offset-2 hover:underline">{s.phone}</a></div></li>
-            <li className="flex gap-4 p-5"><WhatsappIcon className="mt-1 h-5 w-5 shrink-0 text-brand-dark" /><div><p className="font-semibold">WhatsApp</p><a href={whatsappUrl(s.whatsapp, WA_MESSAGES.info)} {...ext} className="text-muted underline-offset-2 hover:underline">{formatWhatsapp(s.whatsapp)}</a></div></li>
+            <li className="flex gap-4 p-5"><WhatsappIcon className="mt-1 h-5 w-5 shrink-0 text-brand-dark" /><div><p className="font-semibold">WhatsApp</p><a href={whatsappUrl(s.whatsapp)} {...ext} className="text-muted underline-offset-2 hover:underline">{formatWhatsapp(s.whatsapp)}</a></div></li>
             <li className="flex gap-4 p-5">
               <Clock aria-hidden="true" className="mt-1 h-5 w-5 shrink-0 text-brand-dark" />
               <div>

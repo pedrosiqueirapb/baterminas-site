@@ -42,7 +42,6 @@ export default async function CategoriesPage() {
                   <Field label="Título" name={`${c.id}-title`} field="title"><input id={`${c.id}-title`} name="title" defaultValue={c.title} required className="field" /></Field>
                   <Field label="Posição na lista" name={`${c.id}-sort_order`} field="sort_order"><input id={`${c.id}-sort_order`} name="sort_order" type="number" min={0} defaultValue={c.sort_order} className="field" /></Field>
                   <div className="sm:col-span-2"><Field label="Descrição curta" name={`${c.id}-description`} field="description"><textarea id={`${c.id}-description`} name="description" rows={2} defaultValue={c.description} className="field" /></Field></div>
-                  <div className="sm:col-span-2"><Field label="Mensagem pré-preenchida do WhatsApp" name={`${c.id}-whatsapp_message`} field="whatsapp_message"><input id={`${c.id}-whatsapp_message`} name="whatsapp_message" defaultValue={c.whatsapp_message} className="field" /></Field></div>
                   <Field label="Texto alternativo da imagem" name={`${c.id}-image_alt`} field="image_alt"><input id={`${c.id}-image_alt`} name="image_alt" defaultValue={c.image_alt} className="field" /></Field>
                   <Field label="Substituir imagem" name={`${c.id}-file`}><ImageInput /></Field>
                   <label className="flex min-h-11 items-center gap-3 sm:col-span-2"><input type="checkbox" name="published" defaultChecked={c.published} className="h-5 w-5 accent-brand" /> Categoria publicada</label>

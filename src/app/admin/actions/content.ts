@@ -185,7 +185,7 @@ export async function saveCategory(_: ActionResult | undefined, fd: FormData): P
   if (!uuidSchema.safeParse(id).success) return { ok: false, message: "Identificador inválido." };
   const parsed = categorySchema.safeParse({
     title: str(fd, "title"), description: str(fd, "description"), image_alt: str(fd, "image_alt"),
-    whatsapp_message: str(fd, "whatsapp_message"), sort_order: str(fd, "sort_order") || "0", published: bool(fd, "published"),
+    sort_order: str(fd, "sort_order") || "0", published: bool(fd, "published"),
   });
   if (!parsed.success) return fail(parsed.error);
 

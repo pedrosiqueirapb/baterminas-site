@@ -73,7 +73,6 @@ export const categorySchema = z.object({
   title: text(80, 1),
   description: text(300),
   image_alt: text(200),
-  whatsapp_message: plain(200),
   sort_order: z.coerce.number().int().min(0).max(9999),
   published: z.boolean(),
 });

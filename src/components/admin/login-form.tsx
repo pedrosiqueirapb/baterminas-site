@@ -9,12 +9,8 @@ export function LoginForm({ accessDenied }: { accessDenied: boolean }) {
   return (
     <form action={action} className="space-y-4" noValidate>
       <div>
-        <label htmlFor="email" className="label">E-mail</label>
-        <input id="email" name="email" type="email" autoComplete="username" required className="field" />
-      </div>
-      <div>
-        <label htmlFor="password" className="label">Senha</label>
-        <input id="password" name="password" type="password" autoComplete="current-password" required className="field" />
+        <label htmlFor="password" className="label">Senha do painel</label>
+        <input id="password" name="password" type="password" autoComplete="current-password" required autoFocus className="field" />
       </div>
       {error && <p role="alert" className="rounded-lg bg-alert/10 px-3 py-2 text-sm font-medium text-alert">{error}</p>}
       <button type="submit" disabled={pending} className="btn btn-primary w-full disabled:opacity-60">{pending ? "Entrando..." : "Entrar"}</button>
