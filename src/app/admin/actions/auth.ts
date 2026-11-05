@@ -12,14 +12,17 @@ const codeSchema = z.object({ factorId: z.string().uuid(), code: z.string().trim
 
 async function clientIp() {
   const h = await headers();
-  return (h.get("x-forwarded-for")?.split(",")[0] ?? h.get("x-real-ip") ?? "local").trim();
+  // O proxy de hospedagem acrescenta o IP real ao FINAL de x-forwarded-for; as entradas anteriores podem ser forjadas pelo cliente.
+  const forwarded = h.get("x-forwarded-for")?.split(",").at(-1);
+  return (forwarded ?? h.get("x-real-ip") ?? "local").trim();
 }
 
 export type AuthState = { error?: string } | undefined;
 
 export async function signIn(_: AuthState, formData: FormData): Promise<AuthState> {
   const ip = await clientIp();
-  if (!rateLimit(`login:${ip}`, 8, 15 * 60_000)) return { error: "Muitas tentativas. Aguarde alguns minutos e tente novamente." };
+  // Limite por IP e limite global: o global continua valendo mesmo se o IP for forjado ou houver ataque distribuído.
+  if (!rateLimit(`login:${ip}`, 8, 15 * 60_000) || !rateLimit("login:global", 40, 15 * 60_000)) return { error: "Muitas tentativas. Aguarde alguns minutos e tente novamente." };
 
   const parsed = loginSchema.safeParse({ password: formData.get("password") });
   if (!parsed.success) return { error: "Informe a senha." };
@@ -68,7 +71,7 @@ export async function enrollTotp(): Promise<{ factorId: string; qrSvg: string; s
 
 export async function verifyTotp(_: AuthState, formData: FormData): Promise<AuthState> {
   const ip = await clientIp();
-  if (!rateLimit(`mfa:${ip}`, 8, 15 * 60_000)) return { error: "Muitas tentativas. Aguarde alguns minutos e tente novamente." };
+  if (!rateLimit(`mfa:${ip}`, 8, 15 * 60_000) || !rateLimit("mfa:global", 40, 15 * 60_000)) return { error: "Muitas tentativas. Aguarde alguns minutos e tente novamente." };
   const parsed = codeSchema.safeParse({ factorId: formData.get("factorId"), code: formData.get("code") });
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Código inválido." };
 
