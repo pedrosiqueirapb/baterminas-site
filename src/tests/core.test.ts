@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { followsSentenceCase } from "@/lib/text";
 import { formatWhatsapp, mapsUrl, normalizeWhatsapp, whatsappUrl } from "@/lib/whatsapp";
 import { brandSchema, settingsSchema, sniffImageType } from "@/lib/validation";
-import { jsonLd } from "@/lib/seo";
+import { jsonLd, websiteJsonLd } from "@/lib/seo";
 import { FALLBACK_SETTINGS } from "@/lib/constants";
 import { collectHours } from "@/lib/hours";
 
@@ -100,5 +100,23 @@ describe("json-ld", () => {
     expect(j.openingHoursSpecification[0].dayOfWeek).toEqual(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]);
     expect(j.openingHoursSpecification[0].opens).toBe("08:00");
     expect(j.openingHoursSpecification[0].closes).toBe("18:00");
+  });
+});
+
+describe("seo: dados estruturados com marcas e categorias", () => {
+  it("inclui somente marcas e categorias recebidas e telefone do WhatsApp", () => {
+    const brands = [{ id: "1", name: "Moura", description: "", image_path: "", image_alt: "", sort_order: 0, active: true }];
+    const categories = [{ id: "c", slug: "carros", title: "Baterias para carros", description: "Opções", image_path: "", image_alt: "", sort_order: 0, published: true }];
+    const j = JSON.parse(jsonLd(FALLBACK_SETTINGS, brands, categories));
+    expect(j.brand).toEqual([{ "@type": "Brand", name: "Moura" }]);
+    expect(j.knowsAbout).toEqual(["Baterias para carros"]);
+    expect(j.hasOfferCatalog.itemListElement).toHaveLength(1);
+    expect(j.contactPoint.telephone).toBe("+5534999954450");
+  });
+  it("não gera brand/catálogo quando não há itens e escapa < no WebSite", () => {
+    const j = JSON.parse(jsonLd(FALLBACK_SETTINGS));
+    expect(j.brand).toBeUndefined();
+    expect(j.hasOfferCatalog).toBeUndefined();
+    expect(websiteJsonLd({ ...FALLBACK_SETTINGS, business_name: "A</script>B" })).not.toContain("</script>");
   });
 });

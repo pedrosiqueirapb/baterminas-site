@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Footer, FloatingWhatsapp } from "@/components/public/footer";
 import { Header } from "@/components/public/header";
 import { About, Brands, Categories, Cta, Features, Hero, Location, Reviews } from "@/components/public/sections";
-import { jsonLd } from "@/lib/seo";
+import { jsonLd, websiteJsonLd } from "@/lib/seo";
 import { getContentSafe } from "@/services/content";
 
 export const revalidate = 3600;
@@ -35,7 +35,8 @@ export default async function HomePage() {
       </main>
       <Footer s={settings} />
       <FloatingWhatsapp s={settings} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(settings) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(settings, brands, categories) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: websiteJsonLd(settings) }} />
     </>
   );
 }

@@ -1,6 +1,6 @@
 import { MAPS_DESTINATION, SITE_URL } from "@/lib/constants";
-import { mapsUrl } from "@/lib/whatsapp";
-import type { SiteSettings } from "@/types/content";
+import { mapsUrl, normalizeWhatsapp } from "@/lib/whatsapp";
+import type { Brand, Category, SiteSettings } from "@/types/content";
 
 const ORDER = ["segunda", "terça", "quarta", "quinta", "sexta", "sábado", "domingo"];
 const EN = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -27,7 +27,7 @@ export function parseDays(label: string): string[] {
 }
 
 /** JSON-LD AutoPartsStore apenas com dados reais e visíveis na página. Sem geo, sem nota inventada. */
-export function jsonLd(s: SiteSettings): string {
+export function jsonLd(s: SiteSettings, brands: Brand[] = [], categories: Category[] = []): string {
   const sameAs = [s.instagram_url, s.google_profile_url].filter(Boolean);
   const data: Record<string, unknown> = {
     "@context": "https://schema.org",
@@ -50,8 +50,26 @@ export function jsonLd(s: SiteSettings): string {
     },
     areaServed: { "@type": "City", name: s.city },
     paymentAccepted: "Dinheiro, PIX, cartão de crédito, cartão de débito",
+    currenciesAccepted: "BRL",
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "customer service",
+      telephone: `+${normalizeWhatsapp(s.whatsapp)}`,
+      areaServed: "BR",
+      availableLanguage: "pt-BR",
+    },
     sameAs,
   };
+  // Marcas e categorias vêm do cadastro do painel (somente itens ativos/publicados e visíveis no site).
+  if (brands.length > 0) data.brand = brands.map((b) => ({ "@type": "Brand", name: b.name }));
+  if (categories.length > 0) {
+    data.knowsAbout = categories.map((c) => c.title);
+    data.hasOfferCatalog = {
+      "@type": "OfferCatalog",
+      name: s.business_name,
+      itemListElement: categories.map((c) => ({ "@type": "Offer", itemOffered: { "@type": "Product", name: c.title, ...(c.description ? { description: c.description } : {}) } })),
+    };
+  }
   const specs = s.opening_hours
     .map((h) => {
       const m = /(\d{1,2})[:h](\d{2})?\s*(?:às|a|-|–)\s*(\d{1,2})[:h](\d{2})?/i.exec(h.hours);
@@ -63,4 +81,17 @@ export function jsonLd(s: SiteSettings): string {
     .filter(Boolean);
   if (specs.length > 0) data.openingHoursSpecification = specs;
   return JSON.stringify(data).replace(/</g, "\\u003c");
+}
+
+/** JSON-LD WebSite: ajuda o Google a identificar o nome e o endereço principal do site. */
+export function websiteJsonLd(s: SiteSettings): string {
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${SITE_URL}/#site`,
+    name: s.business_name,
+    url: SITE_URL,
+    inLanguage: "pt-BR",
+    publisher: { "@id": `${SITE_URL}/#loja` },
+  }).replace(/</g, "\\u003c");
 }

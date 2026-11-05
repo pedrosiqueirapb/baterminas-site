@@ -12,6 +12,12 @@ export const metadata: Metadata = {
   description:
     "Loja de baterias em Uberlândia: baterias para carros, motos, caminhões, estacionárias e nobreaks. Atendimento rápido e entrega em toda a cidade.",
   applicationName: "Baterminas",
+  // Metadados técnicos: não alteram nenhum texto visível.
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
+  formatDetection: { telephone: false, address: false, email: false },
+  category: "automotive",
+  other: { "geo.region": "BR-MG", "geo.placename": "Uberlândia" },
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } } : {}),
   openGraph: { type: "website", locale: "pt_BR", siteName: "Baterminas" },
   twitter: { card: "summary_large_image" },
 };
