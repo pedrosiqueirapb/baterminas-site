@@ -9,6 +9,8 @@ export const GOOGLE_PLACE_ID = "ChIJ2UQ2EwBFpJQRCoDsmyZy9OQ";
  * não envia nem recebe e-mails: o login usa apenas senha + código do autenticador.
  */
 export const ADMIN_LOGIN_ID = "baterminas2024@gmail.com";
+/** ID da Google tag (Google Ads) da Baterminas. Público: aparece no código de qualquer site que usa a tag. */
+export const GOOGLE_TAG_ID = "AW-17611067849";
 export const AUTOJADE_URL = "https://autojade.com.br/";
 export const MAPS_DESTINATION = "Av. Comendador Alexandrino Garcia, 1270 - Marta Helena, Uberlândia - MG";
 
