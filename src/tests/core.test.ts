@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { followsSentenceCase } from "@/lib/text";
-import { formatWhatsapp, mapsUrl, normalizeWhatsapp, whatsappUrl } from "@/lib/whatsapp";
+import { formatWhatsapp, mapsUrl, normalizeWhatsapp, whatsappMessage, whatsappUrl } from "@/lib/whatsapp";
 import { brandSchema, settingsSchema, sniffImageType } from "@/lib/validation";
 import { jsonLd, websiteJsonLd } from "@/lib/seo";
 import { FALLBACK_SETTINGS } from "@/lib/constants";
@@ -26,9 +26,12 @@ describe("regra de capitalização", () => {
 
 describe("whatsapp e links", () => {
   it("gera link direto, sem mensagem pré-preenchida", () => {
-    expect(whatsappUrl("5534999954450")).toBe("https://wa.me/5534999954450");
-    expect(whatsappUrl("(34) 99995-4450")).toBe("https://wa.me/5534999954450");
-    expect(whatsappUrl("5534999954450")).not.toContain("text=");
+    expect(whatsappUrl("5534999954450")).toBe("https://api.whatsapp.com/send?phone=5534999954450&text=Ol%C3%A1%2C%20gostaria%20de%20comprar%20uma%20bateria");
+    expect(whatsappUrl("(34) 99995-4450")).toContain("phone=5534999954450&text=");
+    expect(decodeURIComponent(whatsappUrl("5534999954450", { brand: "Moura" }).split("text=")[1])).toBe("Olá, gostaria de comprar uma bateria Moura");
+    expect(decodeURIComponent(whatsappUrl("5534999954450", { category: { slug: "motos", title: "Motos" } }).split("text=")[1])).toBe("Olá, gostaria de comprar uma bateria para moto");
+    expect(whatsappMessage({ brand: "Zetta", category: { slug: "carros", title: "Carros" } })).toBe("Olá, gostaria de comprar uma bateria para carro da marca Zetta");
+    expect(whatsappMessage({ category: { slug: "x-abc", title: "Tratores" } })).toBe("Olá, gostaria de comprar uma bateria para tratores");
   });
   it("normaliza números", () => {
     expect(normalizeWhatsapp("(34) 99995-4450")).toBe("5534999954450");
@@ -48,7 +51,7 @@ describe("telefone e whatsapp digitados com pontuação", () => {
   it.each(["(34) 99995-4450", "+55 (34) 99995-4450", "34 9 9995 4450", "5534999954450", "34-99995-4450"])("normaliza whatsapp %s", (v) => {
     const r = settingsSchema.safeParse({ ...base, whatsapp: v });
     expect(r.success && r.data.whatsapp).toBe("5534999954450");
-    expect(whatsappUrl(r.success ? r.data.whatsapp : "")).toBe("https://wa.me/5534999954450");
+    expect(whatsappUrl(r.success ? r.data.whatsapp : "")).toContain("https://api.whatsapp.com/send?phone=5534999954450&text=");
   });
   it("rejeita números inválidos", () => {
     expect(settingsSchema.safeParse({ ...base, phone: "123" }).success).toBe(false);

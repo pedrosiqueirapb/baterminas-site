@@ -5,9 +5,34 @@ export function normalizeWhatsapp(value: string): string {
   return digits.length <= 11 ? `55${digits}` : digits;
 }
 
-/** Link direto para a conversa, sem mensagem pré-preenchida. */
-export function whatsappUrl(number: string): string {
-  return `https://wa.me/${normalizeWhatsapp(number) || DEFAULT_WHATSAPP}`;
+export const GENERIC_WHATSAPP_MESSAGE = "Olá, gostaria de comprar uma bateria";
+
+const CATEGORY_SUFFIX: Record<string, string> = {
+  carros: "carro",
+  motos: "moto",
+  caminhoes: "caminhão",
+  estacionarias: "sistema estacionário",
+  nobreaks: "nobreak",
+};
+
+export interface WhatsappInterest {
+  brand?: string;
+  category?: { slug: string; title: string };
+}
+
+/** Monta a mensagem conforme marca e/ou aplicação de interesse. */
+export function whatsappMessage({ brand, category }: WhatsappInterest = {}): string {
+  const categoryName = category ? (CATEGORY_SUFFIX[category.slug] ?? category.title.trim().toLowerCase()) : "";
+  const parts = [GENERIC_WHATSAPP_MESSAGE];
+  if (categoryName) parts.push(`para ${categoryName}`);
+  if (brand?.trim()) parts.push(categoryName ? `da marca ${brand.trim()}` : brand.trim());
+  return parts.join(" ");
+}
+
+/** Link oficial do WhatsApp com mensagem pré-preenchida e codificada. */
+export function whatsappUrl(number: string, interest: WhatsappInterest = {}): string {
+  const phone = normalizeWhatsapp(number) || DEFAULT_WHATSAPP;
+  return `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(whatsappMessage(interest))}`;
 }
 
 export function formatWhatsapp(number: string): string {

@@ -2,8 +2,8 @@ import Image from "next/image";
 import { Carousel } from "@/components/public/carousel";
 import { BadgeCheck, Banknote, Clock, MapPin, Phone, Star, Truck, Zap } from "lucide-react";
 import { InstagramIcon, WhatsappIcon } from "@/components/ui/brand-icons";
-import { GOOGLE_PLACE_ID, MAPS_DESTINATION } from "@/lib/constants";
-import { formatWhatsapp, mapsUrl, whatsappUrl } from "@/lib/whatsapp";
+import { GOOGLE_PLACE_ID } from "@/lib/constants";
+import { formatWhatsapp, whatsappUrl } from "@/lib/whatsapp";
 import { publicImageUrl } from "@/services/content";
 import type { Brand, Category, SiteSettings } from "@/types/content";
 
@@ -33,8 +33,8 @@ export function Hero({ s }: { s: SiteSettings }) {
           <a href={whatsappUrl(s.whatsapp)} {...ext} className="btn btn-primary">
             <WhatsappIcon /> Fale pelo WhatsApp
           </a>
-          <a href={mapsUrl(MAPS_DESTINATION)} {...ext} className="btn btn-outline">
-            <MapPin aria-hidden="true" className="h-5 w-5" /> Como chegar
+          <a href="tel:+553432295639" className="btn btn-outline">
+            <Phone aria-hidden="true" className="h-5 w-5" /> Ligar agora
           </a>
         </div>
       </div>
@@ -91,7 +91,7 @@ export function Categories({ items, s }: { items: Category[]; s: SiteSettings })
               <div className="flex flex-1 flex-col p-6">
                 <h3 className="font-display text-xl font-semibold">{c.title}</h3>
                 <p className="mt-2 flex-1 text-[0.95rem] text-muted">{c.description}</p>
-                <a href={whatsappUrl(s.whatsapp)} {...ext} className="btn btn-dark mt-5 w-full">
+                <a href={whatsappUrl(s.whatsapp, { category: c })} {...ext} aria-label={`Consultar disponibilidade de baterias: ${c.title}, pelo WhatsApp`} className="btn btn-dark mt-5 w-full">
                   <WhatsappIcon /> Consultar disponibilidade
                 </a>
               </div>
@@ -127,7 +127,7 @@ export function Brands({ items, s }: { items: Brand[]; s: SiteSettings }) {
                   <h3 className="font-display text-xl font-semibold text-brand">{b.name}</h3>
                   <p className="mt-2 flex-1 text-[0.95rem] text-white/75">{b.description}</p>
                   <a
-                    href={whatsappUrl(s.whatsapp)}
+                    href={whatsappUrl(s.whatsapp, { brand: b.name })}
                     {...ext}
                     aria-label={`Consultar baterias ${b.name} pelo WhatsApp`}
                     className="btn btn-primary mt-4 w-full"
@@ -242,11 +242,8 @@ export function Location({ s }: { s: SiteSettings }) {
           </ul>
           <div className="on-dark flex flex-col justify-between rounded-2xl bg-ink p-8 text-white">
             <div>
-              <h3 className="font-display text-2xl font-semibold">Como chegar</h3>
+              <h3 className="font-display text-2xl font-semibold">Onde estamos</h3>
               <p className="mt-3 text-white/75">{address}</p>
-            </div>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <a href={mapsUrl(MAPS_DESTINATION)} {...ext} className="btn btn-primary"><MapPin aria-hidden="true" className="h-5 w-5" /> Abrir no Google Maps</a>
             </div>
           </div>
         </div>

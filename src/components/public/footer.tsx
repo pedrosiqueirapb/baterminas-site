@@ -1,5 +1,5 @@
 import { Logo } from "@/components/public/logo";
-import { InstagramIcon, WhatsappIcon } from "@/components/ui/brand-icons";
+import { WhatsappIcon } from "@/components/ui/brand-icons";
 import { AUTOJADE_URL } from "@/lib/constants";
 import { whatsappUrl } from "@/lib/whatsapp";
 import type { SiteSettings } from "@/types/content";
@@ -8,7 +8,7 @@ const ext = { target: "_blank", rel: "noopener noreferrer" } as const;
 
 export function Footer({ s }: { s: SiteSettings }) {
   return (
-    <footer className="on-dark bg-ink pb-24 pt-14 text-white/80 lg:pb-10">
+    <footer className="on-dark bg-ink pb-24 pt-14 text-white/80">
       <div className="container-page grid gap-10 md:grid-cols-3">
         <div>
           <Logo path={s.logo_path} size={72} />
@@ -32,11 +32,6 @@ export function Footer({ s }: { s: SiteSettings }) {
                 <WhatsappIcon className="h-8 w-8" />
               </a>
             </li>
-            <li>
-              <a href={s.instagram_url} {...ext} aria-label="Visitar o Instagram da Baterminas" className="flex h-14 w-14 items-center justify-center rounded-full border border-white/20 text-white transition-colors hover:border-brand hover:bg-brand hover:text-ink">
-                <InstagramIcon className="h-8 w-8" />
-              </a>
-            </li>
           </ul>
         </div>
       </div>
@@ -57,7 +52,7 @@ export function FloatingWhatsapp({ s }: { s: SiteSettings }) {
       href={whatsappUrl(s.whatsapp)}
       {...ext}
       aria-label="Fale pelo WhatsApp"
-      className="fixed bottom-4 right-4 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-[#1fa855] text-white shadow-lg ring-2 ring-white hover:bg-[#188a46] lg:hidden"
+      className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-[max(1rem,env(safe-area-inset-right))] z-30 flex h-14 w-14 items-center justify-center rounded-full bg-[#1fa855] text-white shadow-lg ring-2 ring-white transition-colors hover:bg-[#188a46] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#188a46] lg:bottom-[max(1.5rem,env(safe-area-inset-bottom))] lg:right-[max(1.5rem,env(safe-area-inset-right))]"
     >
       <WhatsappIcon className="h-7 w-7" />
     </a>
