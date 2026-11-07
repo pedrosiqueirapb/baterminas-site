@@ -2,8 +2,6 @@ import type { Brand, Category, SiteSettings } from "@/types/content";
 
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
 
-/** Identificador público do perfil da loja no Google Maps (usado no link de avaliações). */
-export const GOOGLE_PLACE_ID = "ChIJ2UQ2EwBFpJQRCoDsmyZy9OQ";
 /**
  * Identificador interno da conta do painel. O Supabase Auth exige um e-mail por usuário, mas o painel
  * não envia nem recebe e-mails: o login usa apenas senha + código do autenticador.

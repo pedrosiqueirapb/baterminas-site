@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Footer, FloatingWhatsapp } from "@/components/public/footer";
 import { Header } from "@/components/public/header";
-import { About, Brands, Categories, Cta, Features, Hero, Location, Reviews } from "@/components/public/sections";
+import { About, Brands, Categories, Cta, Features, Hero, Location } from "@/components/public/sections";
 import { jsonLd, websiteJsonLd } from "@/lib/seo";
 import { getContentSafe } from "@/services/content";
 
@@ -29,7 +29,6 @@ export default async function HomePage() {
         <Categories items={categories} s={settings} />
         <Brands items={brands} s={settings} />
         <About s={settings} />
-        <Reviews s={settings} />
         <Cta s={settings} />
         <Location s={settings} />
       </main>

@@ -19,7 +19,7 @@ export function Footer({ s }: { s: SiteSettings }) {
         <nav aria-label="Rodapé">
           <h2 className="mb-3 font-display text-base font-semibold text-white">Navegação</h2>
           <ul className="space-y-2 text-[0.95rem]">
-            {[["/#baterias", "Baterias"], ["/#marcas", "Marcas"], ...(s.show_reviews ? [["/#avaliacoes", "Avaliações"]] : []), ["/#contato", "Localização e contato"], ["/privacidade", "Política de privacidade"], ["/termos", "Termos de uso"]].map(([href, label]) => (
+            {[["/#baterias", "Baterias"], ["/#marcas", "Marcas"], ["/#contato", "Localização e contato"], ["/privacidade", "Política de privacidade"], ["/termos", "Termos de uso"]].map(([href, label]) => (
               <li key={href}><a href={href} className="hover:text-brand">{label}</a></li>
             ))}
           </ul>

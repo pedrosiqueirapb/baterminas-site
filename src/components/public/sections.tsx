@@ -1,8 +1,7 @@
 import Image from "next/image";
 import { Carousel } from "@/components/public/carousel";
-import { BadgeCheck, Banknote, Clock, MapPin, Phone, Star, Truck, Zap } from "lucide-react";
+import { BadgeCheck, Banknote, Clock, MapPin, Phone, Truck, Zap } from "lucide-react";
 import { InstagramIcon, WhatsappIcon } from "@/components/ui/brand-icons";
-import { GOOGLE_PLACE_ID } from "@/lib/constants";
 import { formatWhatsapp, whatsappUrl } from "@/lib/whatsapp";
 import { publicImageUrl } from "@/services/content";
 import type { Brand, Category, SiteSettings } from "@/types/content";
@@ -169,26 +168,6 @@ export function About({ s }: { s: SiteSettings }) {
           loading="lazy"
           className="aspect-[4/3] w-full rounded-2xl border border-ink/10 object-cover shadow-sm"
         />
-      </div>
-    </section>
-  );
-}
-
-export function reviewsProfileUrl(s: SiteSettings): string {
-  return s.google_profile_url || `https://search.google.com/local/reviews?placeid=${GOOGLE_PLACE_ID}`;
-}
-
-export function Reviews({ s }: { s: SiteSettings }) {
-  if (!s.show_reviews) return null;
-  return (
-    <section id="avaliacoes" aria-labelledby="t-aval" className="bg-white py-16 sm:py-24">
-      <div className="container-page">
-        <span className="eyebrow">Avaliações</span>
-        <h2 id="t-aval" className="section-title max-w-2xl">O que dizem sobre a Baterminas</h2>
-        <p className="mt-4 max-w-xl text-lg text-muted">Veja o que nossos clientes contam sobre o atendimento da loja.</p>
-        <a href={reviewsProfileUrl(s)} {...ext} className="btn btn-outline-dark mt-8">
-          <Star aria-hidden="true" className="h-5 w-5" /> Ver avaliações no Google
-        </a>
       </div>
     </section>
   );

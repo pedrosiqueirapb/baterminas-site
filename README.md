@@ -68,10 +68,6 @@ Nunca publique a chave de serviço em hospedagem, repositório ou chat.
 - Cabeçalhos: CSP sem `unsafe-eval` em produção, HSTS, nosniff, Referrer-Policy, frame-ancestors none. `/admin` com `noindex` e `no-store`.
 - Limitação de tentativas de login e TOTP em memória, por instância. Em hospedagem serverless com várias instâncias, ela complementa (não substitui) os limites do Supabase Auth.
 
-## Avaliações do Google
-
-A seção de avaliações exibe um botão que leva ao perfil da loja no Google. Não há API paga nem cadastro de avaliações no painel. O link usa o `GOOGLE_PLACE_ID` fixo em `src/lib/constants.ts`; em Configurações é possível informar um link próprio do perfil, que tem prioridade.
-
 ## Build e implantação
 
 ```bash

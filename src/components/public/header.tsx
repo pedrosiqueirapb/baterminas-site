@@ -8,7 +8,6 @@ export function Header({ settings }: { settings: SiteSettings }) {
   const items: NavItem[] = [
     { href: "/#baterias", label: "Baterias" },
     { href: "/#marcas", label: "Marcas" },
-    ...(settings.show_reviews ? [{ href: "/#avaliacoes", label: "Avaliações" }] : []),
     { href: "/#contato", label: "Localização e contato" },
   ];
   const wa = whatsappUrl(settings.whatsapp);

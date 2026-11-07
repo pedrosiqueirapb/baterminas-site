@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Footer } from "@/components/public/footer";
+import { Footer, FloatingWhatsapp } from "@/components/public/footer";
 import { Header } from "@/components/public/header";
 import { getContentSafe } from "@/services/content";
 
@@ -15,6 +15,7 @@ export default async function NotFound() {
         <Link href="/" className="btn btn-primary mt-6">Voltar para a página inicial</Link>
       </main>
       <Footer s={settings} />
+      <FloatingWhatsapp s={settings} />
     </>
   );
 }
