@@ -116,6 +116,7 @@ export async function saveBrand(_: ActionResult | undefined, fd: FormData): Prom
   const idRaw = str(fd, "id");
   const parsed = brandSchema.safeParse({
     name: str(fd, "name"), description: str(fd, "description"), image_alt: str(fd, "image_alt"),
+    whatsapp_message: str(fd, "whatsapp_message"),
     active: bool(fd, "active"),
   });
   if (!parsed.success) return fail(parsed.error);
@@ -187,6 +188,7 @@ export async function saveCategory(_: ActionResult | undefined, fd: FormData): P
   if (id && !uuidSchema.safeParse(id).success) return { ok: false, message: "Identificador inválido." };
   const parsed = categorySchema.safeParse({
     title: str(fd, "title"), description: str(fd, "description"), image_alt: str(fd, "image_alt"),
+    whatsapp_message: str(fd, "whatsapp_message"),
     published: bool(fd, "published"),
   });
   if (!parsed.success) return fail(parsed.error);
@@ -219,7 +221,7 @@ async function createCategory(admin: Admin, data: Record<string, unknown>, image
   const sortOrder = (last?.sort_order ?? -1) + 1;
   const { data: row, error } = await admin.supabase.from("battery_categories")
     .insert({ ...data, slug: categorySlug(String(data.title)), sort_order: sortOrder, image_path: imagePath ?? "" }).select("id").single();
-  if (error) { await removeImage(admin, imagePath); return dbError(); }
+  if (error) { console.error("createCategory:", error.code, error.message); await removeImage(admin, imagePath); return dbError(); }
   await logAdminAction(admin.supabase, admin.user.id, "create", "battery_categories", row.id);
   publish();
   return { ok: true, message: "Categoria criada." };

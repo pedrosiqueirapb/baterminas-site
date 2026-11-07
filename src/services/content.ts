@@ -36,8 +36,8 @@ async function loadContent(): Promise<PublicContent> {
   try {
     const [s, b, c] = await Promise.all([
       supabase.from("site_settings").select(SETTINGS_COLS).eq("id", 1).maybeSingle(),
-      supabase.from("battery_brands").select("id,name,description,image_path,image_alt,sort_order,active").eq("active", true).order("sort_order"),
-      supabase.from("battery_categories").select("id,slug,title,description,image_path,image_alt,sort_order,published").eq("published", true).order("sort_order"),
+      supabase.from("battery_brands").select("id,name,description,image_path,image_alt,whatsapp_message,sort_order,active").eq("active", true).order("sort_order"),
+      supabase.from("battery_categories").select("id,slug,title,description,image_path,image_alt,whatsapp_message,sort_order,published").eq("published", true).order("sort_order"),
     ]);
     if (s.error || b.error || c.error || !s.data) return fallback();
     return {

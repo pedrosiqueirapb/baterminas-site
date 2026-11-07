@@ -20,7 +20,8 @@ function CategoryFields({ c }: { c?: Category }) {
       <div className="sm:col-span-2"><Field label="Título" name={`${p}title`} field="title"><input id={`${p}title`} name="title" defaultValue={c?.title} required className="field" /></Field></div>
       <div className="sm:col-span-2"><Field label="Descrição curta" name={`${p}description`} field="description"><textarea id={`${p}description`} name="description" rows={2} defaultValue={c?.description} className="field" /></Field></div>
       <Field label="Texto alternativo da imagem" name={`${p}image_alt`} field="image_alt"><input id={`${p}image_alt`} name="image_alt" defaultValue={c?.image_alt} className="field" /></Field>
-      <Field label={c ? "Substituir imagem" : "Imagem"} name={`${p}file`}><ImageInput /></Field>
+      <div className="sm:col-span-2"><Field label="Mensagem do WhatsApp" name={`${p}whatsapp_message`} field="whatsapp_message" hint="Texto enviado ao clicar no botão. Se ficar vazio, usa uma mensagem automática com o nome da categoria."><input id={`${p}whatsapp_message`} name="whatsapp_message" defaultValue={c?.whatsapp_message} maxLength={200} className="field" /></Field></div>
+      <Field label={c ? "Substituir imagem" : "Imagem"} name={`${p}file`}><ImageInput id={`${p}file`} /></Field>
       <label className="flex min-h-11 items-center gap-3 sm:col-span-2"><input type="checkbox" name="published" defaultChecked={c?.published ?? true} className="h-5 w-5 accent-brand" /> Categoria publicada</label>
     </div>
   );

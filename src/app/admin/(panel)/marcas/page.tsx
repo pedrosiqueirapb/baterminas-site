@@ -15,7 +15,8 @@ function BrandFields({ b }: { b?: Brand }) {
       <Field label="Nome da marca" name={`${p}name`} field="name"><input id={`${p}name`} name="name" defaultValue={b?.name} required className="field" /></Field>
       <div className="sm:col-span-2"><Field label="Descrição curta" name={`${p}description`} field="description"><textarea id={`${p}description`} name="description" rows={2} defaultValue={b?.description} className="field" /></Field></div>
       <Field label="Texto alternativo da imagem" name={`${p}image_alt`} field="image_alt"><input id={`${p}image_alt`} name="image_alt" defaultValue={b?.image_alt} className="field" /></Field>
-      <Field label={b ? "Substituir imagem" : "Imagem"} name={`${p}file`}><ImageInput /></Field>
+      <div className="sm:col-span-2"><Field label="Mensagem do WhatsApp" name={`${p}whatsapp_message`} field="whatsapp_message" hint="Texto enviado ao clicar no botão. Se ficar vazio, usa uma mensagem automática com o nome da marca."><input id={`${p}whatsapp_message`} name="whatsapp_message" defaultValue={b?.whatsapp_message} maxLength={200} className="field" /></Field></div>
+      <Field label={b ? "Substituir imagem" : "Imagem"} name={`${p}file`}><ImageInput id={`${p}file`} /></Field>
       <label className="flex min-h-11 items-center gap-3 sm:col-span-2"><input type="checkbox" name="active" defaultChecked={b?.active ?? true} className="h-5 w-5 accent-brand" /> Marca ativa (visível no site)</label>
     </div>
   );

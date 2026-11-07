@@ -38,6 +38,7 @@ export type Brand = {
   description: string;
   image_path: string;
   image_alt: string;
+  whatsapp_message: string;
   sort_order: number;
   active: boolean;
 };
@@ -49,6 +50,7 @@ export type Category = {
   description: string;
   image_path: string;
   image_alt: string;
+  whatsapp_message: string;
   sort_order: number;
   published: boolean;
 };

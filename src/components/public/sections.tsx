@@ -14,6 +14,8 @@ const CATEGORY_DEFAULTS: Record<string, string> = {
   nobreaks: "/images/categoria-nobreaks.webp",
 };
 
+const TEL_HREF = "tel:+553432295639";
+
 const ext = { target: "_blank", rel: "noopener noreferrer" } as const;
 
 export function Hero({ s }: { s: SiteSettings }) {
@@ -32,7 +34,7 @@ export function Hero({ s }: { s: SiteSettings }) {
           <a href={whatsappUrl(s.whatsapp)} {...ext} className="btn btn-primary">
             <WhatsappIcon /> Fale pelo WhatsApp
           </a>
-          <a href="tel:+553432295639" className="btn btn-outline">
+          <a href={TEL_HREF} className="btn btn-outline">
             <Phone aria-hidden="true" className="h-5 w-5" /> Ligar agora
           </a>
         </div>
@@ -90,7 +92,7 @@ export function Categories({ items, s }: { items: Category[]; s: SiteSettings })
               <div className="flex flex-1 flex-col p-6">
                 <h3 className="font-display text-xl font-semibold">{c.title}</h3>
                 <p className="mt-2 flex-1 text-[0.95rem] text-muted">{c.description}</p>
-                <a href={whatsappUrl(s.whatsapp, { category: c })} {...ext} aria-label={`Consultar disponibilidade de baterias: ${c.title}, pelo WhatsApp`} className="btn btn-dark mt-5 w-full">
+                <a href={whatsappUrl(s.whatsapp, { category: c, message: c.whatsapp_message })} {...ext} aria-label={`Consultar disponibilidade de baterias: ${c.title}, pelo WhatsApp`} className="btn btn-dark mt-5 w-full">
                   <WhatsappIcon /> Consultar disponibilidade
                 </a>
               </div>
@@ -126,7 +128,7 @@ export function Brands({ items, s }: { items: Brand[]; s: SiteSettings }) {
                   <h3 className="font-display text-xl font-semibold text-brand">{b.name}</h3>
                   <p className="mt-2 flex-1 text-[0.95rem] text-white/75">{b.description}</p>
                   <a
-                    href={whatsappUrl(s.whatsapp, { brand: b.name })}
+                    href={whatsappUrl(s.whatsapp, { brand: b.name, message: b.whatsapp_message })}
                     {...ext}
                     aria-label={`Consultar baterias ${b.name} pelo WhatsApp`}
                     className="btn btn-primary mt-4 w-full"
@@ -203,7 +205,7 @@ export function Location({ s }: { s: SiteSettings }) {
         <h2 id="t-contato" className="section-title">Visite a loja ou fale com a gente</h2>
         <div className="mt-10 grid gap-5 lg:grid-cols-2">
           <ul className="card divide-y divide-ink/10">
-            <li className="flex gap-4 p-5"><Phone aria-hidden="true" className="mt-1 h-5 w-5 shrink-0 text-brand-dark" /><div><p className="font-semibold">Telefone</p><p className="text-muted">{s.phone}</p></div></li>
+            <li className="flex gap-4 p-5"><Phone aria-hidden="true" className="mt-1 h-5 w-5 shrink-0 text-brand-dark" /><div><p className="font-semibold">Telefone</p><a href={TEL_HREF} className="text-muted underline-offset-2 hover:underline">{s.phone}</a></div></li>
             <li className="flex gap-4 p-5"><WhatsappIcon className="mt-1 h-5 w-5 shrink-0 text-brand-dark" /><div><p className="font-semibold">WhatsApp</p><a href={whatsappUrl(s.whatsapp)} {...ext} className="text-muted underline-offset-2 hover:underline">{formatWhatsapp(s.whatsapp)}</a></div></li>
             <li className="flex gap-4 p-5"><InstagramIcon className="mt-1 h-5 w-5 shrink-0 text-brand-dark" /><div><p className="font-semibold">Instagram</p><a href={s.instagram_url} {...ext} className="text-muted underline-offset-2 hover:underline">{instagramHandle(s.instagram_url)}</a></div></li>
             <li className="flex gap-4 p-5">

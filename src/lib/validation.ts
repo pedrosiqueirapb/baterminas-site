@@ -75,6 +75,7 @@ export const brandSchema = z.object({
   name: plain(60, 1),
   description: text(300),
   image_alt: text(200),
+  whatsapp_message: plain(200),
   active: z.boolean(),
 });
 
@@ -82,6 +83,7 @@ export const categorySchema = z.object({
   title: text(80, 1),
   description: text(300),
   image_alt: text(200),
+  whatsapp_message: plain(200),
   published: z.boolean(),
 });
 

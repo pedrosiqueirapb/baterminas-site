@@ -31,6 +31,9 @@ describe("whatsapp e links", () => {
     expect(decodeURIComponent(whatsappUrl("5534999954450", { brand: "Moura" }).split("text=")[1])).toBe("Olá, gostaria de comprar uma bateria Moura");
     expect(decodeURIComponent(whatsappUrl("5534999954450", { category: { slug: "motos", title: "Motos" } }).split("text=")[1])).toBe("Olá, gostaria de comprar uma bateria para moto");
     expect(whatsappMessage({ brand: "Zetta", category: { slug: "carros", title: "Carros" } })).toBe("Olá, gostaria de comprar uma bateria para carro da marca Zetta");
+    expect(whatsappMessage({ category: { slug: "x-abc", title: "Baterias para tratores" } })).toBe("Olá, gostaria de comprar uma bateria para tratores");
+    expect(whatsappMessage({ brand: "Moura", message: "  Oi, quero Moura 60Ah  " })).toBe("Oi, quero Moura 60Ah");
+    expect(whatsappMessage({ brand: "Moura", message: "" })).toBe("Olá, gostaria de comprar uma bateria Moura");
     expect(whatsappMessage({ category: { slug: "x-abc", title: "Tratores" } })).toBe("Olá, gostaria de comprar uma bateria para tratores");
   });
   it("normaliza números", () => {
@@ -61,11 +64,11 @@ describe("telefone e whatsapp digitados com pontuação", () => {
 
 describe("validação", () => {
   it("rejeita título em Title Case nas marcas", () => {
-    const r = brandSchema.safeParse({ name: "Moura", description: "Baterias Para Carros", image_alt: "", sort_order: 1, active: true });
+    const r = brandSchema.safeParse({ name: "Moura", description: "Baterias Para Carros", image_alt: "", whatsapp_message: "", sort_order: 1, active: true });
     expect(r.success).toBe(false);
   });
   it("aceita marca válida", () => {
-    expect(brandSchema.safeParse({ name: "Moura", description: "Consulte as opções pelo WhatsApp.", image_alt: "", sort_order: "2", active: true }).success).toBe(true);
+    expect(brandSchema.safeParse({ name: "Moura", description: "Consulte as opções pelo WhatsApp.", image_alt: "", whatsapp_message: "", sort_order: "2", active: true }).success).toBe(true);
   });
   it("valida configurações e rejeita URLs inseguras", () => {
     const ok = {
@@ -108,8 +111,8 @@ describe("json-ld", () => {
 
 describe("seo: dados estruturados com marcas e categorias", () => {
   it("inclui somente marcas e categorias recebidas e telefone do WhatsApp", () => {
-    const brands = [{ id: "1", name: "Moura", description: "", image_path: "", image_alt: "", sort_order: 0, active: true }];
-    const categories = [{ id: "c", slug: "carros", title: "Baterias para carros", description: "Opções", image_path: "", image_alt: "", sort_order: 0, published: true }];
+    const brands = [{ id: "1", name: "Moura", description: "", image_path: "", image_alt: "", whatsapp_message: "", sort_order: 0, active: true }];
+    const categories = [{ id: "c", slug: "carros", title: "Baterias para carros", description: "Opções", image_path: "", image_alt: "", whatsapp_message: "", sort_order: 0, published: true }];
     const j = JSON.parse(jsonLd(FALLBACK_SETTINGS, brands, categories));
     expect(j.brand).toEqual([{ "@type": "Brand", name: "Moura" }]);
     expect(j.knowsAbout).toEqual(["Baterias para carros"]);

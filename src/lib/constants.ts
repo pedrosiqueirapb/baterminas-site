@@ -55,6 +55,7 @@ export const FALLBACK_BRANDS: Brand[] = ["Moura", "Zetta", "Varta", "Formax"].ma
   description: `Baterias ${name} disponíveis na loja. Consulte as opções pelo WhatsApp.`,
   image_path: "",
   image_alt: `Bateria conceitual representando a marca ${name}`,
+  whatsapp_message: "",
   sort_order: i,
   active: true,
 }));
@@ -72,6 +73,7 @@ export const FALLBACK_CATEGORIES: Category[] = [
   description: c.description,
   image_path: "",
   image_alt: c.title,
+  whatsapp_message: "",
   sort_order: i,
   published: true,
 }));

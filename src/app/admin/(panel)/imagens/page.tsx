@@ -31,7 +31,7 @@ export default async function ImagesPage() {
               <p className="text-xs text-muted">{current ? "Imagem personalizada em uso." : "Imagem padrão em uso."} {s.hint}</p>
               <AdminForm action={uploadSiteImage} submitLabel="Enviar e publicar" className="space-y-3">
                 <input type="hidden" name="slot" value={s.slot} />
-                <Field label="Nova imagem" name={`${s.slot}-file`}><ImageInput /></Field>
+                <Field label="Nova imagem" name={`${s.slot}-file`}><ImageInput id={`${s.slot}-file`} /></Field>
               </AdminForm>
               {current && (
                 <AdminForm action={resetSiteImage} submitLabel="Restaurar padrão" variant="dark" confirmMessage="Restaurar a imagem padrão? O arquivo enviado será removido.">

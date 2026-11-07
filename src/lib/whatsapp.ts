@@ -15,14 +15,22 @@ const CATEGORY_SUFFIX: Record<string, string> = {
   nobreaks: "nobreak",
 };
 
+/** Extrai a aplicação do título ("Baterias para tratores" vira "tratores"). */
+function applicationName(title: string): string {
+  return title.trim().toLowerCase().replace(/^baterias?\s+(para|de|do|da)\s+(o\s+|a\s+|os\s+|as\s+)?/, "");
+}
+
 export interface WhatsappInterest {
+  /** Mensagem definida no painel; quando preenchida, substitui a automática. */
+  message?: string;
   brand?: string;
   category?: { slug: string; title: string };
 }
 
 /** Monta a mensagem conforme marca e/ou aplicação de interesse. */
-export function whatsappMessage({ brand, category }: WhatsappInterest = {}): string {
-  const categoryName = category ? (CATEGORY_SUFFIX[category.slug] ?? category.title.trim().toLowerCase()) : "";
+export function whatsappMessage({ brand, category, message }: WhatsappInterest = {}): string {
+  if (message?.trim()) return message.trim();
+  const categoryName = category ? (CATEGORY_SUFFIX[category.slug] ?? applicationName(category.title)) : "";
   const parts = [GENERIC_WHATSAPP_MESSAGE];
   if (categoryName) parts.push(`para ${categoryName}`);
   if (brand?.trim()) parts.push(categoryName ? `da marca ${brand.trim()}` : brand.trim());

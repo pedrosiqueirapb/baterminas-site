@@ -93,15 +93,15 @@ export function Field({ label, name, field, hint, children }: { label: string; n
   );
 }
 
-export function ImageInput({ name = "file" }: { name?: string }) {
+export function ImageInput({ name = "file", id = name }: { name?: string; id?: string }) {
   const error = useContext(ErrorsCtx)["file"];
   const [preview, setPreview] = useState<string | null>(null);
   const [localError, setLocalError] = useState<string | null>(null);
   return (
     <div>
       <input
-        id={name} name={name} type="file" accept="image/jpeg,image/png,image/webp,image/avif" className="field"
-        aria-describedby={`${name}-erro`}
+        id={id} name={name} type="file" accept="image/jpeg,image/png,image/webp,image/avif" className="field"
+        aria-describedby={`${id}-erro`}
         onChange={(e) => {
           const f = e.target.files?.[0];
           setLocalError(null);
@@ -112,7 +112,7 @@ export function ImageInput({ name = "file" }: { name?: string }) {
         }}
       />
       <p className="mt-1 text-xs text-muted">JPG, PNG, WebP ou AVIF, até 3 MB.</p>
-      {(localError || error) && <p id={`${name}-erro`} role="alert" className="mt-1 text-sm text-alert">{localError ?? error}</p>}
+      {(localError || error) && <p id={`${id}-erro`} role="alert" className="mt-1 text-sm text-alert">{localError ?? error}</p>}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {preview && <img src={preview} alt="Pré-visualização da nova imagem" width={240} height={180} className="mt-2 h-32 w-auto rounded-lg border border-ink/10 object-cover" />}
     </div>
