@@ -55,7 +55,10 @@ function fallback(): PublicContent {
   return { settings: FALLBACK_SETTINGS, brands: FALLBACK_BRANDS, categories: FALLBACK_CATEGORIES, fromDatabase: false };
 }
 
-/** Uma leitura agrupada, cacheada e invalidada por tag após cada publicação no painel. */
+/**
+ * Uma leitura agrupada e cacheada. É invalidada por tag a cada publicação no painel; o prazo curto
+ * garante que alterações apareçam mesmo se a hospedagem rodar mais de uma instância do servidor.
+ */
 export const getPublicContent = unstable_cache(
   async () => {
     const content = await loadContent();
@@ -63,7 +66,7 @@ export const getPublicContent = unstable_cache(
     return content;
   },
   ["public-content"],
-  { tags: [CONTENT_TAG], revalidate: 3600 },
+  { tags: [CONTENT_TAG], revalidate: 60 },
 ).bind(null) as () => Promise<PublicContent>;
 
 /** Versão resiliente: nunca lança; usa contingência quando o banco está indisponível. */

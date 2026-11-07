@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Carousel } from "@/components/public/carousel";
+import { ExpandableList } from "@/components/public/expandable-list";
 import { BadgeCheck, Banknote, Clock, MapPin, Phone, Truck, Zap } from "lucide-react";
 import { InstagramIcon, WhatsappIcon } from "@/components/ui/brand-icons";
 import { formatWhatsapp, whatsappUrl } from "@/lib/whatsapp";
@@ -13,6 +14,9 @@ const CATEGORY_DEFAULTS: Record<string, string> = {
   estacionarias: "/images/categoria-estacionarias.webp",
   nobreaks: "/images/categoria-nobreaks.webp",
 };
+
+/** Acima disso, os cards extras ficam atrás do botão "Ver mais" (evita uma página muito longa). */
+const CATEGORIES_VISIBLE = 6;
 
 const TEL_HREF = "tel:+553432295639";
 
@@ -77,7 +81,7 @@ export function Categories({ items, s }: { items: Category[]; s: SiteSettings })
       <div className="container-page">
         <span className="eyebrow">Aplicações</span>
         <h2 id="t-baterias" className="section-title max-w-2xl">Baterias para o seu veículo e para outras aplicações</h2>
-        <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-6">
+        <ExpandableList limit={CATEGORIES_VISIBLE} className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-6">
           {items.map((c, i) => (
             <li key={c.id} className={`card flex flex-col overflow-hidden lg:col-span-2 ${items.length % 3 === 2 && i === items.length - 2 ? "lg:col-start-2" : ""}`}>
               <Image
@@ -98,7 +102,7 @@ export function Categories({ items, s }: { items: Category[]; s: SiteSettings })
               </div>
             </li>
           ))}
-        </ul>
+        </ExpandableList>
       </div>
     </section>
   );

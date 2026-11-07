@@ -1,8 +1,33 @@
 "use client";
 
-import { createContext, startTransition, useActionState, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, useTransition } from "react";
 import { CheckCircle2, AlertCircle, Pencil, Trash2 } from "lucide-react";
+import { useToast } from "@/components/admin/toast";
 import type { ActionResult } from "@/types/content";
+
+const UNEXPECTED: ActionResult = { ok: false, message: "Não foi possível concluir a ação. Verifique sua conexão e tente novamente." };
+
+/** Executa a ação do servidor e avisa o resultado imediatamente (antes de o formulário sair da tela). */
+function useAdminAction(action: Action) {
+  const notify = useToast();
+  const [state, setState] = useState<ActionResult>();
+  const [pending, startTransition] = useTransition();
+  const run = (data: FormData, onSuccess?: () => void) =>
+    startTransition(async () => {
+      let result: ActionResult;
+      try {
+        result = await action(undefined, data);
+      } catch (e) {
+        // Redirecionamentos do Next (ex.: sessão expirada) precisam seguir adiante.
+        if (e && typeof e === "object" && "digest" in e && String((e as { digest: unknown }).digest).startsWith("NEXT_REDIRECT")) throw e;
+        result = UNEXPECTED;
+      }
+      setState(result);
+      notify(result);
+      if (result.ok) onSuccess?.();
+    });
+  return { state, pending, run };
+}
 
 /** Indica envio em andamento (o reset automático do React 19 é evitado para não apagar o que foi digitado). */
 const PendingCtx = createContext(false);
@@ -47,14 +72,9 @@ export function AdminForm({
   action: Action; children: React.ReactNode;
   submitLabel?: string; className?: string; resetOnSuccess?: boolean; confirmMessage?: string; variant?: "primary" | "danger" | "dark"; iconOnly?: boolean;
 }) {
-  const [state, formAction, pending] = useActionState(action, undefined);
+  const { state, pending, run } = useAdminAction(action);
   const ref = useRef<HTMLFormElement>(null);
   const closeDialog = useContext(DialogCloseCtx);
-  useEffect(() => {
-    if (!state?.ok) return;
-    if (resetOnSuccess) ref.current?.reset();
-    closeDialog?.();
-  }, [state, resetOnSuccess, closeDialog]);
   const errors = state && !state.ok ? state.fieldErrors ?? {} : {};
   return (
     <form
@@ -62,14 +82,18 @@ export function AdminForm({
       className={className}
       onSubmit={(e) => {
         e.preventDefault();
+        if (pending) return;
         if (confirmMessage && !window.confirm(confirmMessage)) return;
-        const data = new FormData(e.currentTarget);
-        startTransition(() => formAction(data));
+        const form = e.currentTarget;
+        run(new FormData(form), () => {
+          if (resetOnSuccess) form.reset();
+          closeDialog?.();
+        });
       }}
     >
       <PendingCtx.Provider value={pending}>
       <ErrorsCtx.Provider value={errors}>{children}</ErrorsCtx.Provider>
-      <Feedback state={state} />
+      {state && !state.ok && !iconOnly && <Feedback state={state} />}
       <div className="flex flex-wrap items-center gap-3">
         <SubmitButton variant={variant} iconOnly={iconOnly}>{submitLabel}</SubmitButton>
         {closeDialog && variant !== "danger" && (
@@ -120,17 +144,21 @@ export function ImageInput({ name = "file", id = name }: { name?: string; id?: s
 }
 
 export function MoveButtons({ action, id, name }: { action: Action; id: string; name: string }) {
-  const [state, formAction] = useActionState(action, undefined);
+  const { pending, run } = useAdminAction(action);
+  const move = (dir: "up" | "down") => {
+    const data = new FormData();
+    data.set("id", id);
+    data.set("dir", dir);
+    run(data);
+  };
   return (
-    <form action={formAction} className="flex gap-1">
-      <input type="hidden" name="id" value={id} />
+    <div className="flex gap-1">
       {(["up", "down"] as const).map((dir) => (
-        <button key={dir} type="submit" name="dir" value={dir} aria-label={dir === "up" ? `Mover ${name} para cima` : `Mover ${name} para baixo`} className="btn btn-outline-dark !min-h-11 !min-w-11 !px-0 !py-0">
+        <button key={dir} type="button" disabled={pending} onClick={() => move(dir)} aria-label={dir === "up" ? `Mover ${name} para cima` : `Mover ${name} para baixo`} className="btn btn-outline-dark !min-h-11 !min-w-11 !px-0 !py-0 disabled:opacity-60">
           <span aria-hidden="true">{dir === "up" ? "↑" : "↓"}</span>
         </button>
       ))}
-      {state && !state.ok && <span role="alert" className="sr-only">{state.message}</span>}
-    </form>
+    </div>
   );
 }
 

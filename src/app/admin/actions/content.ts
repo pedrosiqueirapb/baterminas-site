@@ -26,6 +26,7 @@ function fail(e: ZodError): ActionResult {
   return { ok: false, message: "Corrija os campos destacados.", fieldErrors };
 }
 
+const deleteError = (): ActionResult => ({ ok: false, message: "Não foi possível excluir. Verifique sua permissão e tente novamente." });
 const dbError = (): ActionResult => ({ ok: false, message: "Não foi possível salvar. Verifique sua permissão e tente novamente." });
 
 async function uploadImage(admin: Admin, file: File, folder: string): Promise<{ path: string } | { error: string }> {
@@ -153,7 +154,7 @@ export async function deleteBrand(_: ActionResult | undefined, fd: FormData): Pr
   if (!uuidSchema.safeParse(id).success) return { ok: false, message: "Identificador inválido." };
   const { data: old } = await admin.supabase.from("battery_brands").select("image_path").eq("id", id).maybeSingle();
   const { data: rows, error } = await admin.supabase.from("battery_brands").delete().eq("id", id).select("id");
-  if (error || !rows?.length) return dbError();
+  if (error || !rows?.length) return deleteError();
   await removeImage(admin, old?.image_path);
   await logAdminAction(admin.supabase, admin.user.id, "delete", "battery_brands", id);
   publish();
@@ -233,7 +234,7 @@ export async function deleteCategory(_: ActionResult | undefined, fd: FormData):
   if (!uuidSchema.safeParse(id).success) return { ok: false, message: "Identificador inválido." };
   const { data: old } = await admin.supabase.from("battery_categories").select("image_path").eq("id", id).maybeSingle();
   const { data: rows, error } = await admin.supabase.from("battery_categories").delete().eq("id", id).select("id");
-  if (error || !rows?.length) return dbError();
+  if (error || !rows?.length) return deleteError();
   await removeImage(admin, old?.image_path);
   await logAdminAction(admin.supabase, admin.user.id, "delete", "battery_categories", id);
   publish();

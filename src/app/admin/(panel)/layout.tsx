@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { LayoutDashboard, Settings, Tag, Layers, ImageIcon, ExternalLink, LogOut } from "lucide-react";
 import { signOut } from "@/app/admin/actions/auth";
+import { ToastProvider } from "@/components/admin/toast";
 import { Logo } from "@/components/public/logo";
 import { requireAdmin } from "@/lib/auth";
 
@@ -49,7 +50,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
         </nav>
       </header>
       <main className="container-page py-8">
-        {children}
+        <ToastProvider>{children}</ToastProvider>
       </main>
     </div>
   );

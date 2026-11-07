@@ -5,7 +5,8 @@ import { About, Brands, Categories, Cta, Features, Hero, Location } from "@/comp
 import { jsonLd, websiteJsonLd } from "@/lib/seo";
 import { getContentSafe } from "@/services/content";
 
-export const revalidate = 3600;
+/** Renderizada a cada acesso (com dados em cache curto) para que CDN/ISR nunca sirvam conteúdo já excluído no painel. */
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { settings: s } = await getContentSafe();
