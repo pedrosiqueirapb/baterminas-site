@@ -6,11 +6,11 @@ const isProd = process.env.NODE_ENV === "production";
 const csp = [
   "default-src 'self'",
   // Next injeta scripts inline de hidratação; sem unsafe-eval em produção.
-  `script-src 'self' 'unsafe-inline' https://*.googletagmanager.com https://www.googleadservices.com${isProd ? "" : " 'unsafe-eval'"}`,
+  `script-src 'self' 'unsafe-inline' https://*.googletagmanager.com https://www.googleadservices.com https://www.google.com${isProd ? "" : " 'unsafe-eval'"}`,
   "style-src 'self' 'unsafe-inline'",
-  `img-src 'self' data: blob:${supabaseHost ? ` https://${supabaseHost}` : ""} https://*.googletagmanager.com https://www.googleadservices.com https://www.google.com https://www.google.com.br https://*.g.doubleclick.net https://*.google-analytics.com`,
+  `img-src 'self' data: blob:${supabaseHost ? ` https://${supabaseHost}` : ""} https://*.googletagmanager.com https://www.googleadservices.com https://www.google.com https://www.google.com.br https://*.g.doubleclick.net https://*.google-analytics.com https://pagead2.googlesyndication.com https://*.google.com https://*.google.com.br`,
   "font-src 'self' data:",
-  `connect-src 'self'${supabaseHost ? ` https://${supabaseHost} wss://${supabaseHost}` : ""} https://*.googletagmanager.com https://www.googleadservices.com https://www.google.com https://www.google.com.br https://*.g.doubleclick.net https://*.google-analytics.com https://*.analytics.google.com`,
+  `connect-src 'self'${supabaseHost ? ` https://${supabaseHost} wss://${supabaseHost}` : ""} https://*.googletagmanager.com https://www.googleadservices.com https://www.google.com https://www.google.com.br https://*.g.doubleclick.net https://*.google-analytics.com https://*.analytics.google.com https://ad.doubleclick.net https://pagead2.googlesyndication.com https://*.google.com https://*.google.com.br`,
   "frame-src https://*.googletagmanager.com https://td.doubleclick.net",
   "frame-ancestors 'none'",
   "base-uri 'self'",
