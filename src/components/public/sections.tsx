@@ -211,7 +211,7 @@ export function Location({ s }: { s: SiteSettings }) {
           <ul className="card divide-y divide-ink/10">
             <li className="flex gap-4 p-5"><Phone aria-hidden="true" className="mt-1 h-5 w-5 shrink-0 text-brand-dark" /><div><p className="font-semibold">Telefone</p><a href={TEL_HREF} className="text-muted underline-offset-2 hover:underline">{s.phone}</a></div></li>
             <li className="flex gap-4 p-5"><WhatsappIcon className="mt-1 h-5 w-5 shrink-0 text-brand-dark" /><div><p className="font-semibold">WhatsApp</p><a href={whatsappUrl(s.whatsapp)} {...ext} className="text-muted underline-offset-2 hover:underline">{formatWhatsapp(s.whatsapp)}</a></div></li>
-            <li className="flex gap-4 p-5"><InstagramIcon className="mt-1 h-5 w-5 shrink-0 text-brand-dark" /><div><p className="font-semibold">Instagram</p><a href={s.instagram_url} {...ext} className="text-muted underline-offset-2 hover:underline">{instagramHandle(s.instagram_url)}</a></div></li>
+            <li className="flex gap-4 p-5"><InstagramIcon className="mt-1 h-5 w-5 shrink-0 text-brand-dark" /><div><p className="font-semibold">Instagram</p><p className="text-muted">{instagramHandle(s.instagram_url)}</p></div></li>
             <li className="flex gap-4 p-5">
               <Clock aria-hidden="true" className="mt-1 h-5 w-5 shrink-0 text-brand-dark" />
               <div>
