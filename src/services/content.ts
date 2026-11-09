@@ -28,7 +28,7 @@ export type PublicContent = {
 };
 
 const SETTINGS_COLS =
-  "business_name,phone,whatsapp,instagram_url,google_profile_url,address_line,address_complement,neighborhood,city,state,postal_code,opening_hours,hours_note,hero_title,hero_description,hero_image_path,hero_image_alt,about_title,about_text,about_image_path,about_image_alt,cta_title,cta_description,footer_copyright,logo_path,seo_title,seo_description,show_reviews,show_about";
+  "business_name,phone,whatsapp,instagram_url,google_profile_url,address_line,address_complement,neighborhood,city,state,postal_code,opening_hours,hours_note,hero_title,hero_description,hero_image_path,hero_image_alt,about_title,about_text,about_image_path,about_image_alt,cta_title,cta_description,footer_copyright,logo_path,seo_title,seo_description,show_about";
 
 async function loadContent(): Promise<PublicContent> {
   const supabase = anonClient();
@@ -39,14 +39,18 @@ async function loadContent(): Promise<PublicContent> {
       supabase.from("battery_brands").select("id,name,description,image_path,image_alt,whatsapp_message,sort_order,active").eq("active", true).order("sort_order"),
       supabase.from("battery_categories").select("id,slug,title,description,image_path,image_alt,whatsapp_message,sort_order,published").eq("published", true).order("sort_order"),
     ]);
-    if (s.error || b.error || c.error || !s.data) return fallback();
+    if (s.error || b.error || c.error || !s.data) {
+      console.error("loadContent:", s.error?.code ?? b.error?.code ?? c.error?.code ?? "sem-configuracoes");
+      return fallback();
+    }
     return {
       settings: { ...FALLBACK_SETTINGS, ...(s.data as unknown as SiteSettings) },
       brands: (b.data ?? []) as Brand[],
       categories: (c.data ?? []) as Category[],
       fromDatabase: true,
     };
-  } catch {
+  } catch (e) {
+    console.error("loadContent:", e instanceof Error ? e.message : "erro-desconhecido");
     return fallback();
   }
 }
@@ -54,6 +58,9 @@ async function loadContent(): Promise<PublicContent> {
 function fallback(): PublicContent {
   return { settings: FALLBACK_SETTINGS, brands: FALLBACK_BRANDS, categories: FALLBACK_CATEGORIES, fromDatabase: false };
 }
+
+/** Último conteúdo que veio do banco nesta instância do servidor (evita voltar a dados antigos fixos). */
+let lastKnownContent: PublicContent | null = null;
 
 /**
  * Uma leitura agrupada e cacheada. É invalidada por tag a cada publicação no painel; o prazo curto
@@ -69,11 +76,13 @@ export const getPublicContent = unstable_cache(
   { tags: [CONTENT_TAG], revalidate: 60 },
 ).bind(null) as () => Promise<PublicContent>;
 
-/** Versão resiliente: nunca lança; usa contingência quando o banco está indisponível. */
+/** Versão resiliente: nunca lança. Se o banco falhar, usa o último conteúdo real conhecido; só sem ele recorre ao padrão fixo. */
 export async function getContentSafe(): Promise<PublicContent> {
   try {
-    return await getPublicContent();
+    const content = await getPublicContent();
+    lastKnownContent = content;
+    return content;
   } catch {
-    return fallback();
+    return lastKnownContent ?? fallback();
   }
 }

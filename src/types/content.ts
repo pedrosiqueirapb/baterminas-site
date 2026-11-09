@@ -28,7 +28,6 @@ export type SiteSettings = {
   logo_path: string;
   seo_title: string;
   seo_description: string;
-  show_reviews: boolean;
   show_about: boolean;
 };
 

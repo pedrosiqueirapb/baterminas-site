@@ -65,7 +65,6 @@ export default async function SettingsPage() {
             <fieldset className="card space-y-3 p-6">
               <legend className="px-2 font-display font-semibold">Seções opcionais</legend>
               <label className="flex min-h-11 items-center gap-3"><input type="checkbox" name="show_about" defaultChecked={s.show_about} className="h-5 w-5 accent-brand" /> Exibir a seção sobre a loja</label>
-              <label className="flex min-h-11 items-center gap-3"><input type="checkbox" name="show_reviews" defaultChecked={s.show_reviews} className="h-5 w-5 accent-brand" /> Exibir a seção de avaliações</label>
             </fieldset>
           </>
       </AdminForm>
