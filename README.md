@@ -46,6 +46,7 @@ http://localhost:3000
 - **Linguagem:** TypeScript
 - **Estilização:** Tailwind CSS
 - **Banco de dados:** Supabase / PostgreSQL
+- **IDE:** Google Antigravity
 - **Hospedagem:** Hostinger
 
 ---
