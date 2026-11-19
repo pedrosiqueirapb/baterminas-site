@@ -151,7 +151,6 @@ export function Brands({ items, s }: { items: Brand[]; s: SiteSettings }) {
 }
 
 export function About({ s }: { s: SiteSettings }) {
-  if (!s.show_about) return null;
   return (
     <section id="sobre" aria-labelledby="t-sobre" className="py-16 sm:py-24">
       <div className="container-page grid items-center gap-10 lg:grid-cols-2">

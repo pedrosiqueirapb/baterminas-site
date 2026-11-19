@@ -61,11 +61,6 @@ export default async function SettingsPage() {
               <Field label="Título da página (até 70 caracteres)" name="seo_title"><input id="seo_title" name="seo_title" maxLength={70} defaultValue={s.seo_title} className="field" required /></Field>
               <Field label="Descrição para buscadores (até 170 caracteres)" name="seo_description"><textarea id="seo_description" name="seo_description" maxLength={170} rows={3} defaultValue={s.seo_description} className="field" required /></Field>
             </fieldset>
-
-            <fieldset className="card space-y-3 p-6">
-              <legend className="px-2 font-display font-semibold">Seções opcionais</legend>
-              <label className="flex min-h-11 items-center gap-3"><input type="checkbox" name="show_about" defaultChecked={s.show_about} className="h-5 w-5 accent-brand" /> Exibir a seção sobre a loja</label>
-            </fieldset>
           </>
       </AdminForm>
     </>

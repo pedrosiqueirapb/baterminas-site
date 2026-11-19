@@ -45,7 +45,6 @@ export const FALLBACK_SETTINGS: SiteSettings = {
   seo_title: "Loja de baterias em Uberlândia - MG | Baterminas",
   seo_description:
     "Loja de baterias em Uberlândia: baterias para carros, motos, caminhões, estacionárias e nobreaks. Atendimento rápido e entrega em toda a cidade.",
-  show_about: true,
 };
 
 export const FALLBACK_BRANDS: Brand[] = ["Moura", "Zetta", "Varta", "Formax"].map((name, i) => ({

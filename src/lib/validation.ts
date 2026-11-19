@@ -67,7 +67,6 @@ export const settingsSchema = z.object({
   footer_copyright: plain(160, 1),
   seo_title: plain(70, 1),
   seo_description: plain(170, 1),
-  show_about: z.boolean(),
 });
 
 export const brandSchema = z.object({

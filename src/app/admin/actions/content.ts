@@ -66,7 +66,6 @@ export async function saveSettings(_: ActionResult | undefined, fd: FormData): P
     about_title: str(fd, "about_title"), about_text: str(fd, "about_text"), about_image_alt: str(fd, "about_image_alt"),
     cta_title: str(fd, "cta_title"), cta_description: str(fd, "cta_description"),
     footer_copyright: str(fd, "footer_copyright"), seo_title: str(fd, "seo_title"), seo_description: str(fd, "seo_description"),
-    show_about: bool(fd, "show_about"),
   });
   if (!parsed.success) return fail(parsed.error);
   const { data: rows, error } = await admin.supabase.from("site_settings").update(parsed.data).eq("id", 1).select("id");

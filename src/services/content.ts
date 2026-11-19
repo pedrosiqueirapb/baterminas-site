@@ -28,7 +28,7 @@ export type PublicContent = {
 };
 
 const SETTINGS_COLS =
-  "business_name,phone,whatsapp,instagram_url,google_profile_url,address_line,address_complement,neighborhood,city,state,postal_code,opening_hours,hours_note,hero_title,hero_description,hero_image_path,hero_image_alt,about_title,about_text,about_image_path,about_image_alt,cta_title,cta_description,footer_copyright,logo_path,seo_title,seo_description,show_about";
+  "business_name,phone,whatsapp,instagram_url,google_profile_url,address_line,address_complement,neighborhood,city,state,postal_code,opening_hours,hours_note,hero_title,hero_description,hero_image_path,hero_image_alt,about_title,about_text,about_image_path,about_image_alt,cta_title,cta_description,footer_copyright,logo_path,seo_title,seo_description";
 
 async function loadContent(): Promise<PublicContent> {
   const supabase = anonClient();
